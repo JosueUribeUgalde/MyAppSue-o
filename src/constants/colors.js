@@ -7,15 +7,15 @@
  */
 
 export const COLORS = {
-  // Colores primarios - Tema de sueño/noche
-  primary: '#4A90E2',        // Azul principal
-  primaryDark: '#2E5C8A',    // Azul oscuro
-  primaryLight: '#7CB9F5',   // Azul claro
+  // Colores primarios - Morado principal
+  primary: '#969AB4',        // Morado lavanda principal
+  primaryDark: '#6B6F8A',    // Morado oscuro
+  primaryLight: '#B8BCCE',   // Morado claro
   
   // Colores secundarios
-  secondary: '#9B59B6',      // Púrpura (relacionado con sueño)
-  secondaryDark: '#6C3483',  // Púrpura oscuro
-  secondaryLight: '#D7BDE2', // Púrpura claro
+  secondary: '#0179A5',      // Azul cian
+  secondaryDark: '#015A7F',  // Azul oscuro
+  secondaryLight: '#4DA3C4', // Azul claro
   
   // Colores de fondo
   background: '#F5F7FA',     // Fondo principal claro
@@ -29,17 +29,22 @@ export const COLORS = {
   textLight: '#FFFFFF',      // Texto claro
   textDark: '#1A1A1A',       // Texto muy oscuro
   
+  // Colores de acento
+  accent: '#E2B95C',         // Amarillo dorado
+  accentDark: '#C49A3D',     // Dorado oscuro
+  coral: '#D4655B',          // Coral/rojo suave
+  
   // Estados
   success: '#27AE60',        // Verde - éxito
-  warning: '#F39C12',        // Naranja - advertencia
-  error: '#E74C3C',          // Rojo - error
-  info: '#3498DB',           // Azul - información
+  warning: '#E2B95C',        // Amarillo dorado - advertencia
+  error: '#D4655B',          // Coral - error
+  info: '#0179A5',           // Azul cian - información
   
   // Sueño específico
-  deepSleep: '#2C3E50',      // Sueño profundo
-  lightSleep: '#7CB9F5',     // Sueño ligero
-  rem: '#9B59B6',            // Sueño REM
-  awake: '#F39C12',          // Despierto
+  deepSleep: '#6B6F8A',      // Sueño profundo (morado oscuro)
+  lightSleep: '#B8BCCE',     // Sueño ligero (morado claro)
+  rem: '#969AB4',            // Sueño REM (morado principal)
+  awake: '#E2B95C',          // Despierto (amarillo dorado)
   
   // Utilidades
   border: '#E0E0E0',         // Bordes
@@ -47,6 +52,6 @@ export const COLORS = {
   overlay: 'rgba(0,0,0,0.5)', // Overlay semi-transparente
   
   // Gradientes (arrays para uso con LinearGradient)
-  gradientNight: ['#1A1A2E', '#16213E', '#0F3460'],
-  gradientDay: ['#4A90E2', '#7CB9F5', '#B8E6FF'],
+  gradientNight: ['#1A1A2E', '#6B6F8A', '#969AB4'],
+  gradientDay: ['#969AB4', '#B8BCCE', '#E2B95C'],
 };

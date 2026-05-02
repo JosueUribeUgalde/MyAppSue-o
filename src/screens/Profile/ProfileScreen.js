@@ -12,17 +12,19 @@
 
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { CustomButton, Card } from '../../components';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { CustomButton, Card, BottomTabBar } from '../../components';
 import styles from './styles';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const handleLogout = () => {
     // Aquí irá la lógica de cerrar sesión con Firebase
     console.log('Cerrar sesión');
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.wrapper} edges={['top']}>
+      <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>JD</Text>
@@ -69,6 +71,9 @@ const ProfileScreen = () => {
         />
       </View>
     </ScrollView>
+    
+    <BottomTabBar navigation={navigation} currentScreen="Profile" />
+  </SafeAreaView>
   );
 };
 

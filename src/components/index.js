@@ -8,3 +8,4 @@
 export { default as CustomButton } from './common/Button/CustomButton';
 export { default as Card } from './common/Card/Card';
 export { default as CustomInput } from './common/Input/CustomInput';
+export { default as BottomTabBar } from './common/BottomTabBar/BottomTabBar';
