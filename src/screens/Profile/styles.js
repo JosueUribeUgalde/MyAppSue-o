@@ -8,9 +8,13 @@ import { StyleSheet } from 'react-native';
 import { COLORS, SIZES } from '../../constants';
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  
+  container: {
+    flex: 1,
     padding: SIZES.padding.lg,
   },
   

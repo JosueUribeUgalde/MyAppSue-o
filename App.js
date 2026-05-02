@@ -15,9 +15,8 @@
  */
 
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
-import HomeScreen from './src/screens/Home/HomeScreen';
-// import AppNavigator from './src/navigation/AppNavigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AppNavigator from './src/navigation/AppNavigator';
 // import { useAuth } from './src/hooks/useAuth';
 
 export default function App() {
@@ -25,15 +24,9 @@ export default function App() {
   // const { user, loading } = useAuth();
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaProvider>
       <StatusBar style="auto" />
-      
-      {/* Por ahora mostramos la pantalla Home */}
-      {/* En producción, descomentar AppNavigator y agregar lógica de auth */}
-      <HomeScreen />
-      
-      {/* Navegación completa (descomentar cuando esté listo): */}
-      {/* <AppNavigator /> */}
-    </View>
+      <AppNavigator />
+    </SafeAreaProvider>
   );
 }

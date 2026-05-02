@@ -15,6 +15,9 @@ import { View } from 'react-native';
 import HomeScreen from '../screens/Home/HomeScreen';
 import SleepTrackingScreen from '../screens/SleepTracking/SleepTrackingScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import StatisticsScreen from '../screens/Statistics/StatisticsScreen';
+import HistoryScreen from '../screens/History/HistoryScreen';
+import TipsScreen from '../screens/Tips/TipsScreen';
 
 /**
  * Navegador simple de la aplicación
@@ -35,6 +38,12 @@ const AppNavigator = () => {
         return <HomeScreen navigation={{ navigate }} />;
       case 'SleepTracking':
         return <SleepTrackingScreen navigation={{ navigate }} />;
+      case 'Statistics':
+        return <StatisticsScreen navigation={{ navigate }} />;
+      case 'History':
+        return <HistoryScreen navigation={{ navigate }} />;
+      case 'Tips':
+        return <TipsScreen navigation={{ navigate }} />;
       case 'Profile':
         return <ProfileScreen navigation={{ navigate }} />;
       default:

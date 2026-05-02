@@ -10,40 +10,188 @@
  * - Notas adicionales
  */
 
-import React, { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { CustomButton, CustomInput, Card } from '../../components';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Ionicons } from '@expo/vector-icons';
+import { CustomButton, CustomInput, Card, BottomTabBar } from '../../components';
+import { COLORS } from '../../constants';
 import styles from './styles';
 
-const SleepTrackingScreen = () => {
-  const [bedTime, setBedTime] = useState('');
-  const [wakeTime, setWakeTime] = useState('');
+const SleepTrackingScreen = ({ navigation }) => {
+  // Estados para las horas
+  const [bedTime, setBedTime] = useState(new Date());
+  const [wakeTime, setWakeTime] = useState(new Date());
+  const [showBedTimePicker, setShowBedTimePicker] = useState(false);
+  const [showWakeTimePicker, setShowWakeTimePicker] = useState(false);
+  
+  // Estados para calidad y notas
+  const [quality, setQuality] = useState(3); // 1-5
   const [notes, setNotes] = useState('');
+  const [totalSleep, setTotalSleep] = useState('');
+
+  // Inicializar horas por defecto
+  useEffect(() => {
+    const now = new Date();
+    const bed = new Date();
+    bed.setHours(23, 30, 0);
+    const wake = new Date();
+    wake.setHours(7, 0, 0);
+    
+    setBedTime(bed);
+    setWakeTime(wake);
+  }, []);
+
+  // Calcular tiempo total de sueño
+  useEffect(() => {
+    calculateTotalSleep();
+  }, [bedTime, wakeTime]);
+
+  const calculateTotalSleep = () => {
+    let diff = wakeTime.getTime() - bedTime.getTime();
+    
+    // Si la hora de despertar es menor, significa que es al día siguiente
+    if (diff < 0) {
+      diff += 24 * 60 * 60 * 1000; // Agregar 24 horas
+    }
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    setTotalSleep(`${hours}h ${minutes}m`);
+  };
+
+  const adjustTime = (type, amount) => {
+    const time = type === 'bed' ? new Date(bedTime) : new Date(wakeTime);
+    time.setMinutes(time.getMinutes() + amount);
+    
+    if (type === 'bed') {
+      setBedTime(time);
+    } else {
+      setWakeTime(time);
+    }
+  };
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  };
 
   const handleSaveSleep = () => {
+    // Preparar datos para Firebase
+    const sleepData = {
+      bedTime: bedTime.toISOString(),
+      wakeTime: wakeTime.toISOString(),
+      duration: totalSleep,
+      quality: quality,
+      notes: notes,
+      date: new Date().toISOString(),
+      userId: null, // Se llenará cuando esté implementada la autenticación
+    };
+    
     // Aquí irá la lógica para guardar en Firebase
-    console.log('Guardar sueño:', { bedTime, wakeTime, notes });
+    console.log('Datos listos para Firebase:', sleepData);
+    
+    // TODO: Llamar a sleepService.createSleepRecord(sleepData)
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Registrar Sueño</Text>
+    <SafeAreaView style={styles.wrapper} edges={['top']}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Registrar Sueño</Text>
 
-      <Card>
-        <CustomInput
-          label="Hora de Dormir"
-          placeholder="22:00"
-          value={bedTime}
-          onChangeText={setBedTime}
-        />
+        {/* Hora de Dormir */}
+        <Text style={styles.label}>HORA DE DORMIR</Text>
+        <Card>
+          <View style={styles.timePickerCard}>
+            <View style={styles.timePickerContent}>
+              <Text style={styles.timeLabel}>ME DORMÍ A</Text>
+              <Text style={styles.timeValue}>{formatTime(bedTime)}</Text>
+            </View>
+            
+            <View style={styles.timeButtons}>
+              <TouchableOpacity 
+                style={styles.timeButton}
+                onPress={() => adjustTime('bed', -15)}
+              >
+                <Ionicons name="remove" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.timeButton}
+                onPress={() => adjustTime('bed', 15)}
+              >
+                <Ionicons name="add" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Card>
 
-        <CustomInput
-          label="Hora de Despertar"
-          placeholder="07:00"
-          value={wakeTime}
-          onChangeText={setWakeTime}
-        />
+        {/* Hora de Despertar */}
+        <Text style={styles.label}>HORA DE DESPERTAR</Text>
+        <Card>
+          <View style={styles.timePickerCard}>
+            <View style={styles.timePickerContent}>
+              <Text style={styles.timeLabel}>ME DESPERTÉ A</Text>
+              <Text style={styles.timeValue}>{formatTime(wakeTime)}</Text>
+            </View>
+            
+            <View style={styles.timeButtons}>
+              <TouchableOpacity 
+                style={styles.timeButton}
+                onPress={() => adjustTime('wake', -15)}
+              >
+                <Ionicons name="remove" size={24} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.timeButton}
+                onPress={() => adjustTime('wake', 15)}
+              >
+                <Ionicons name="add" size={24} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Card>
 
+        {/* Total Calculado */}
+        <Card style={styles.totalCard}>
+          <Text style={styles.totalLabel}>TOTAL CALCULADO</Text>
+          <Text style={styles.totalSubLabel}>Tiempo de sueño registrado</Text>
+          <Text style={styles.totalValue}>{totalSleep}</Text>
+        </Card>
+
+        {/* Calidad del Sueño */}
+        <Text style={styles.label}>CALIDAD DEL SUEÑO</Text>
+        <Card>
+          <View style={styles.qualityContainer}>
+            <Text style={styles.qualityLabel}>¿Cómo fue tu sueño?</Text>
+            <View style={styles.starsContainer}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity
+                  key={star}
+                  onPress={() => setQuality(star)}
+                  style={styles.starButton}
+                >
+                  <Ionicons
+                    name={star <= quality ? 'star' : 'star-outline'}
+                    size={40}
+                    color={star <= quality ? COLORS.accent : COLORS.disabled}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={styles.qualityValue}>
+              {quality === 1 && 'Muy malo'}
+              {quality === 2 && 'Malo'}
+              {quality === 3 && 'Regular'}
+              {quality === 4 && 'Bueno'}
+              {quality === 5 && 'Excelente'}
+            </Text>
+          </View>
+        </Card>
+
+        {/* Notas */}
         <CustomInput
           label="Notas (opcional)"
           placeholder="¿Cómo te sentiste?"
@@ -53,29 +201,32 @@ const SleepTrackingScreen = () => {
           numberOfLines={4}
         />
 
+        {/* Botón Guardar */}
         <CustomButton
           title="Guardar Registro"
           onPress={handleSaveSleep}
           size="large"
         />
-      </Card>
 
-      <Text style={styles.sectionTitle}>Registros Recientes</Text>
+        <Text style={styles.sectionTitle}>Registros Recientes</Text>
+        
+        <Card>
+          <View style={styles.recordItem}>
+            <Text style={styles.recordDate}>16 Abril 2026</Text>
+            <Text style={styles.recordHours}>7.5 horas</Text>
+          </View>
+        </Card>
+
+        <Card>
+          <View style={styles.recordItem}>
+            <Text style={styles.recordDate}>15 Abril 2026</Text>
+            <Text style={styles.recordHours}>8.0 horas</Text>
+          </View>
+        </Card>
+      </ScrollView>
       
-      <Card>
-        <View style={styles.recordItem}>
-          <Text style={styles.recordDate}>16 Abril 2026</Text>
-          <Text style={styles.recordHours}>7.5 horas</Text>
-        </View>
-      </Card>
-
-      <Card>
-        <View style={styles.recordItem}>
-          <Text style={styles.recordDate}>15 Abril 2026</Text>
-          <Text style={styles.recordHours}>8.0 horas</Text>
-        </View>
-      </Card>
-    </ScrollView>
+      <BottomTabBar navigation={navigation} currentScreen="SleepTracking" />
+    </SafeAreaView>
   );
 };
 
