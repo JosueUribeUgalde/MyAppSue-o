@@ -22,11 +22,12 @@ import {
   query, 
   where, 
   orderBy,
-  Timestamp 
+  Timestamp,
+  serverTimestamp
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db, auth } from '../config/firebase';
 
-const SLEEP_COLLECTION = 'sleepRecords';
+const SLEEP_COLLECTION = 'registros_sueno'; // Colección según tu modelo
 
 /**
  * Guardar un nuevo registro de sueño
@@ -135,4 +136,46 @@ export const calculateWeeklyStats = (records) => {
     averageQuality: Math.round(totalQuality / records.length),
     totalNights: records.length,
   };
+};
+
+/**
+ * Guardar registro de sueño con el modelo completo
+ * Función adaptada al modelo de base de datos especificado
+ * @param {Object} datosDelFormulario - Datos del formulario de sueño
+ * @returns {Promise<Object>} - Resultado de la operación
+ */
+export const guardarRegistroSueno = async (datosDelFormulario) => {
+  try {
+    // 1. Verificamos que haya un usuario logueado (requerido por tu modelo)
+    const usuarioActual = auth.currentUser;
+    if (!usuarioActual) {
+      throw new Error("No hay usuario autenticado");
+    }
+
+    // 2. Apuntamos a la colección 'registros_sueno'
+    // Firestore creará esta colección automáticamente si no existe
+    const refColeccion = collection(db, "registros_sueno");
+
+    // 3. Guardamos el documento mapeando los campos EXACTAMENTE a tu modelo
+    const docRef = await addDoc(refColeccion, {
+      id_usuario: usuarioActual.uid, // ID seguro de Auth
+      fecha_sueno: datosDelFormulario.fecha_sueno,
+      hora_dormir: datosDelFormulario.hora_dormir,
+      hora_despertar: datosDelFormulario.hora_despertar,
+      horas_totales: datosDelFormulario.horas_totales,
+      id_calidad: datosDelFormulario.id_calidad,
+      calidad_texto: datosDelFormulario.calidad_texto,
+      calidad_emoji: datosDelFormulario.calidad_emoji,
+      notas: datosDelFormulario.notas || "",
+      origen: "app_movil",
+      fecha_creacion: serverTimestamp(), // Hora exacta controlada por el servidor
+      fecha_actualizacion: serverTimestamp()
+    });
+
+    console.log("¡Registro guardado con éxito! ID: ", docRef.id);
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error("Error al guardar en la base de datos: ", error);
+    return { success: false, error: error.message };
+  }
 };

@@ -15,9 +15,10 @@
 
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
-import { CustomButton, CustomInput } from '../components';
-import { useAuth } from '../hooks/useAuth';
-import { validateEmail, validateRequired } from '../utils/validators';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { CustomButton, CustomInput } from '../../components';
+import { useAuth } from '../../hooks/useAuth';
+import { validateEmail, validateRequired } from '../../utils/validators';
 import styles from './styles';
 
 const LoginScreen = ({ navigation }) => {
@@ -61,16 +62,29 @@ const LoginScreen = ({ navigation }) => {
     const result = await signIn(email, password);
     
     if (result.success) {
-      Alert.alert('Éxito', '¡Bienvenido!');
-      // Navegar a Home
-      // navigation.navigate('Home');
+      Alert.alert('¡Éxito!', 'Bienvenido de vuelta');
+      // La navegación será manejada automáticamente por AppNavigator
     } else {
-      Alert.alert('Error', result.error || 'No se pudo iniciar sesión');
+      // Mensajes de error más amigables
+      let errorMessage = 'No se pudo iniciar sesión';
+      
+      if (result.error?.includes('user-not-found')) {
+        errorMessage = 'No existe una cuenta con este correo';
+      } else if (result.error?.includes('wrong-password')) {
+        errorMessage = 'Contraseña incorrecta';
+      } else if (result.error?.includes('invalid-email')) {
+        errorMessage = 'Correo electrónico inválido';
+      } else if (result.error?.includes('invalid-credential')) {
+        errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña';
+      }
+      
+      Alert.alert('Error', errorMessage);
     }
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F7FA' }} edges={['top']}>
+      <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Iniciar Sesión</Text>
         <Text style={styles.subtitle}>Bienvenido de vuelta</Text>
@@ -100,23 +114,15 @@ const LoginScreen = ({ navigation }) => {
 
         {/* Botón de Login usando componente reutilizable */}
         <CustomButton
-          title="Iniciar Sesión"
+          title={loading ? "Iniciando sesión..." : "Iniciar Sesión"}
           onPress={handleLogin}
           size="large"
-          loading={loading}
+          disabled={loading}
           style={styles.loginButton}
-        />
-
-        {/* Botón secundario para registro */}
-        <CustomButton
-          title="¿No tienes cuenta? Regístrate"
-          onPress={() => navigation.navigate('Signup')}
-          variant="outline"
-          size="medium"
-          style={styles.signupButton}
         />
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
