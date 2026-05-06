@@ -11,15 +11,47 @@
  */
 
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CustomButton, Card, BottomTabBar } from '../../components';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './styles';
 
 const ProfileScreen = ({ navigation }) => {
-  const handleLogout = () => {
-    // Aquí irá la lógica de cerrar sesión con Firebase
-    console.log('Cerrar sesión');
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro de que deseas cerrar sesión?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Sí, cerrar sesión',
+          style: 'destructive',
+          onPress: async () => {
+            const result = await logout();
+            if (result.success) {
+              // La navegación se manejará automáticamente en AppNavigator
+              console.log('Sesión cerrada exitosamente');
+            } else {
+              Alert.alert('Error', 'No se pudo cerrar sesión');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // Obtener iniciales del nombre o email
+  const getInitials = () => {
+    if (user?.displayName) {
+      return user.displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+    }
+    return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
   return (
@@ -27,10 +59,10 @@ const ProfileScreen = ({ navigation }) => {
       <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>JD</Text>
+          <Text style={styles.avatarText}>{getInitials()}</Text>
         </View>
-        <Text style={styles.name}>Juan Pérez</Text>
-        <Text style={styles.email}>juan@ejemplo.com</Text>
+        <Text style={styles.name}>{user?.displayName || 'Usuario'}</Text>
+        <Text style={styles.email}>{user?.email || 'Sin correo'}</Text>
       </View>
 
       <Text style={styles.sectionTitle}>Estadísticas</Text>

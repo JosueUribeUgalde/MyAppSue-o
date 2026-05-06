@@ -3,15 +3,14 @@
  * 
  * Configuración de navegación de la aplicación.
  * Define las rutas y estructura de navegación.
- * 
- * NOTA: Este es un ejemplo básico. Para usar navegación real,
- * instala: npm install @react-navigation/native @react-navigation/bottom-tabs
- * 
- * Para ahora, exporta un componente simple que maneja las pantallas.
+ * Maneja la autenticación mostrando Login o las pantallas principales.
  */
 
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator, Text } from 'react-native';
+import { useAuth } from '../hooks/useAuth';
+import { COLORS } from '../constants';
+import LoginScreen from '../screens/EJEMPLO_Login/LoginScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import SleepTrackingScreen from '../screens/SleepTracking/SleepTrackingScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
@@ -20,13 +19,31 @@ import HistoryScreen from '../screens/History/HistoryScreen';
 import TipsScreen from '../screens/Tips/TipsScreen';
 
 /**
- * Navegador simple de la aplicación
- * En producción, reemplazar con React Navigation
+ * Navegador principal de la aplicación
+ * Maneja la autenticación y navegación entre pantallas
  */
 const AppNavigator = () => {
+  const { user, loading } = useAuth();
   const [currentScreen, setCurrentScreen] = useState('Home');
 
-  // Función para cambiar de pantalla (temporal)
+  // Mostrar loading mientras se verifica la autenticación
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F7FA' }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={{ marginTop: 16, fontSize: 16, color: COLORS.textSecondary }}>
+          Cargando...
+        </Text>
+      </View>
+    );
+  }
+
+  // Si no hay usuario autenticado, mostrar Login
+  if (!user) {
+    return <LoginScreen />;
+  }
+
+  // Función para cambiar de pantalla
   const navigate = (screen) => {
     setCurrentScreen(screen);
   };

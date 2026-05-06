@@ -11,12 +11,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomButton, CustomInput, Card, BottomTabBar } from '../../components';
 import { COLORS } from '../../constants';
+import { guardarRegistroSueno } from '../../services/sleepService';
 import styles from './styles';
 
 const SleepTrackingScreen = ({ navigation }) => {
@@ -30,6 +31,7 @@ const SleepTrackingScreen = ({ navigation }) => {
   const [quality, setQuality] = useState(3); // 1-5
   const [notes, setNotes] = useState('');
   const [totalSleep, setTotalSleep] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Inicializar horas por defecto
   useEffect(() => {
@@ -77,22 +79,76 @@ const SleepTrackingScreen = ({ navigation }) => {
     return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
 
-  const handleSaveSleep = () => {
-    // Preparar datos para Firebase
-    const sleepData = {
-      bedTime: bedTime.toISOString(),
-      wakeTime: wakeTime.toISOString(),
-      duration: totalSleep,
-      quality: quality,
-      notes: notes,
-      date: new Date().toISOString(),
-      userId: null, // Se llenará cuando esté implementada la autenticación
+  // Obtener texto y emoji de calidad según el valor
+  const getCalidadInfo = (qualityValue) => {
+    const calidades = {
+      1: { texto: 'Muy malo', emoji: '😫' },
+      2: { texto: 'Malo', emoji: '😔' },
+      3: { texto: 'Regular', emoji: '😐' },
+      4: { texto: 'Bueno', emoji: '😊' },
+      5: { texto: 'Excelente', emoji: '😄' }
     };
-    
-    // Aquí irá la lógica para guardar en Firebase
-    console.log('Datos listos para Firebase:', sleepData);
-    
-    // TODO: Llamar a sleepService.createSleepRecord(sleepData)
+    return calidades[qualityValue] || calidades[3];
+  };
+
+  const handleSaveSleep = async () => {
+    try {
+      setLoading(true);
+
+      // Obtener info de calidad
+      const calidadInfo = getCalidadInfo(quality);
+
+      // Formatear fecha en formato YYYY-MM-DD
+      const today = new Date();
+      const fechaSueno = today.toISOString().split('T')[0];
+
+      // Preparar datos según el modelo de la base de datos
+      const datosDelFormulario = {
+        fecha_sueno: fechaSueno,
+        hora_dormir: formatTime(bedTime),
+        hora_despertar: formatTime(wakeTime),
+        horas_totales: totalSleep,
+        id_calidad: quality,
+        calidad_texto: calidadInfo.texto,
+        calidad_emoji: calidadInfo.emoji,
+        notas: notes
+      };
+      
+      console.log('Guardando datos:', datosDelFormulario);
+      
+      // Llamar al servicio de Firebase
+      const resultado = await guardarRegistroSueno(datosDelFormulario);
+      
+      if (resultado.success) {
+        Alert.alert(
+          '¡Éxito!',
+          'Registro de sueño guardado correctamente',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Resetear formulario
+                setNotes('');
+                setQuality(3);
+              }
+            }
+          ]
+        );
+      } else {
+        Alert.alert(
+          'Error',
+          resultado.error || 'No se pudo guardar el registro'
+        );
+      }
+    } catch (error) {
+      console.error('Error en handleSaveSleep:', error);
+      Alert.alert(
+        'Error',
+        'Ocurrió un error al guardar el registro'
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -203,9 +259,10 @@ const SleepTrackingScreen = ({ navigation }) => {
 
         {/* Botón Guardar */}
         <CustomButton
-          title="Guardar Registro"
+          title={loading ? "Guardando..." : "Guardar Registro"}
           onPress={handleSaveSleep}
           size="large"
+          disabled={loading}
         />
 
         <Text style={styles.sectionTitle}>Registros Recientes</Text>

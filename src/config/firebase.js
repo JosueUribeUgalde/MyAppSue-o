@@ -15,15 +15,15 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-// Configuración de Firebase - REEMPLAZAR CON TUS CREDENCIALES
+// Configuración de Firebase - Credenciales del proyecto SleepTrack
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_AUTH_DOMAIN",
-  projectId: "TU_PROJECT_ID",
-  storageBucket: "TU_STORAGE_BUCKET",
-  messagingSenderId: "TU_MESSAGING_SENDER_ID",
-  appId: "TU_APP_ID",
-  // measurementId: "TU_MEASUREMENT_ID" // Opcional para Analytics
+  apiKey: "AIzaSyAnUyGdkM_GCCS07AEUlXeGN8xSR_Ug-dI",
+  authDomain: "sleeptrack-4d3b6.firebaseapp.com",
+  projectId: "sleeptrack-4d3b6",
+  storageBucket: "sleeptrack-4d3b6.firebasestorage.app",
+  messagingSenderId: "753326145118",
+  appId: "1:753326145118:web:bbeb40959377bb1402becf",
+  measurementId: "G-KMQKVJW43B"
 };
 
 // Inicializar Firebase
