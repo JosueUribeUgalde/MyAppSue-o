@@ -75,4 +75,4 @@ const StatisticsScreen = ({ navigation }) => {
     );
 };
 
-export default StatisticsScreen;
+export default StatisticsScreen ;
