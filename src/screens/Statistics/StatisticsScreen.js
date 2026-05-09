@@ -26,7 +26,7 @@ const StatisticsScreen = ({ navigation }) => {
         </Card>
       </ScrollView>
       
-      <BottomTabBar navigation={navigation} currentScreen="Statistics" />
+      <BottomTabBar navigation ={navigation} currentScreen="Statistics" />
     </SafeAreaView>
   );
 };

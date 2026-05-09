@@ -104,7 +104,7 @@ const HomeScreen = ({ navigation }) => {
       </View>
     </ScrollView>
     
-    <BottomTabBar navigation={navigation} currentScreen="Home" />
+    <BottomTabBar navigation ={navigation} currentScreen="Home" />
   </SafeAreaView>
   );
 };
