@@ -40,5 +40,19 @@ yarn-error.*
 /ios
 /android
 
+# Environment variables
 .env
 .env.local
+
+# ✅ Visual Studio (AGREGA ESTO)
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vsidx
+*.sqlite
+*.db-shm
+*.db-wal
+*.wsuo
+ 
