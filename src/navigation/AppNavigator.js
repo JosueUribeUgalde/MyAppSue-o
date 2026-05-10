@@ -6,10 +6,10 @@
  * Maneja la autenticación mostrando Login o las pantallas principales.
  */
 
-import React, { useState } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
-import { COLORS } from '../constants';
+import { COLORS, SIZES } from '../constants';
 import LoginScreen from '../screens/EJEMPLO_Login/LoginScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import SleepTrackingScreen from '../screens/SleepTracking/SleepTrackingScreen';
@@ -25,13 +25,36 @@ import TipsScreen from '../screens/Tips/TipsScreen';
 const AppNavigator = () => {
   const { user, loading } = useAuth();
   const [currentScreen, setCurrentScreen] = useState('Home');
+  const [guestUser, setGuestUser] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      setGuestUser(null);
+      setCurrentScreen('Home');
+    }
+  }, [user]);
+
+  const handleGuestLogin = () => {
+    setGuestUser({
+      uid: 'guest',
+      displayName: 'Invitado',
+      email: 'Modo sin cuenta',
+      isGuest: true,
+    });
+    setCurrentScreen('Home');
+  };
+
+  const handleGuestLogout = () => {
+    setGuestUser(null);
+    setCurrentScreen('Home');
+  };
 
   // Mostrar loading mientras se verifica la autenticación
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F7FA' }}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={{ marginTop: 16, fontSize: 16, color: COLORS.textSecondary }}>
+        <Text style={styles.loadingText}>
           Cargando...
         </Text>
       </View>
@@ -39,8 +62,8 @@ const AppNavigator = () => {
   }
 
   // Si no hay usuario autenticado, mostrar Login
-  if (!user) {
-    return <LoginScreen />;
+  if (!user && !guestUser) {
+    return <LoginScreen onContinueWithoutAccount={handleGuestLogin} />;
   }
 
   // Función para cambiar de pantalla
@@ -62,7 +85,13 @@ const AppNavigator = () => {
       case 'Tips':
         return <TipsScreen navigation={{ navigate }} />;
       case 'Profile':
-        return <ProfileScreen navigation={{ navigate }} />;
+        return (
+          <ProfileScreen
+            navigation={{ navigate }}
+            authUser={user || guestUser}
+            onGuestLogout={handleGuestLogout}
+          />
+        );
       default:
         return <HomeScreen navigation={{ navigate }} />;
     }
@@ -70,6 +99,21 @@ const AppNavigator = () => {
 
   return <View style={{ flex: 1 }}>{renderScreen()}</View>;
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+  },
+
+  loadingText: {
+    marginTop: SIZES.padding.lg,
+    fontSize: SIZES.font.regular,
+    color: COLORS.textSecondary,
+  },
+});
 
 export default AppNavigator;
 

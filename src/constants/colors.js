@@ -49,6 +49,7 @@ export const COLORS = {
   // Utilidades
   border: '#E0E0E0',         // Bordes
   disabled: '#BDC3C7',       // Elementos deshabilitados
+  shadow: '#000000',         // Sombras
   overlay: 'rgba(0,0,0,0.5)', // Overlay semi-transparente
   
   // Gradientes (arrays para uso con LinearGradient)

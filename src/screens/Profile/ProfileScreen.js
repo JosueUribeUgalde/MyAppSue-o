@@ -17,8 +17,9 @@ import { CustomButton, Card, BottomTabBar } from '../../components';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './styles';
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation, authUser, onGuestLogout }) => {
   const { user, logout } = useAuth();
+  const currentUser = authUser || user;
 
   const handleLogout = async () => {
     Alert.alert(
@@ -33,6 +34,11 @@ const ProfileScreen = ({ navigation }) => {
           text: 'Sí, cerrar sesión',
           style: 'destructive',
           onPress: async () => {
+            if (currentUser?.isGuest) {
+              onGuestLogout?.();
+              return;
+            }
+
             const result = await logout();
             if (result.success) {
               // La navegación se manejará automáticamente en AppNavigator
@@ -48,10 +54,10 @@ const ProfileScreen = ({ navigation }) => {
 
   // Obtener iniciales del nombre o email
   const getInitials = () => {
-    if (user?.displayName) {
-      return user.displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+    if (currentUser?.displayName) {
+      return currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase();
     }
-    return user?.email?.[0]?.toUpperCase() || 'U';
+    return currentUser?.email?.[0]?.toUpperCase() || 'U';
   };
 
   return (
@@ -61,8 +67,8 @@ const ProfileScreen = ({ navigation }) => {
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{getInitials()}</Text>
         </View>
-        <Text style={styles.name}>{user?.displayName || 'Usuario'}</Text>
-        <Text style={styles.email}>{user?.email || 'Sin correo'}</Text>
+        <Text style={styles.name}>{currentUser?.displayName || 'Usuario'}</Text>
+        <Text style={styles.email}>{currentUser?.email || 'Sin correo'}</Text>
       </View>
 
       <Text style={styles.sectionTitle}>Estadísticas</Text>

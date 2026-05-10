@@ -15,6 +15,7 @@
 
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { COLORS } from '../../../constants';
 import styles from './styles';
 
 const CustomButton = ({ 
@@ -50,7 +51,7 @@ const CustomButton = ({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' ? '#4A90E2' : '#fff'} />
+        <ActivityIndicator color={variant === 'outline' ? COLORS.primary : COLORS.textLight} />
       ) : (
         <Text style={textStyles}>{title}</Text>
       )}

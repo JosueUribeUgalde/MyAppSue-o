@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.borderRadius.lg,
     padding: SIZES.padding.xl,
     marginBottom: SIZES.padding.lg,
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     padding: SIZES.padding.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
       height: 2,

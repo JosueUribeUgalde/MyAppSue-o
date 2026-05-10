@@ -9,6 +9,11 @@ import { StyleSheet } from 'react-native';
 import { COLORS, SIZES } from '../../constants';
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -42,6 +47,11 @@ const styles = StyleSheet.create({
   
   signupButton: {
     marginTop: SIZES.padding.md,
+  },
+
+  guestButton: {
+    marginTop: SIZES.padding.md,
+    marginBottom: SIZES.padding.xl,
   },
 });
 

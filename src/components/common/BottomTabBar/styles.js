@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
       height: -2,

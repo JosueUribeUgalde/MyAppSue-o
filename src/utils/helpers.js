@@ -5,6 +5,8 @@
  * Facilita la lógica común y evita duplicación de código.
  */
 
+import { COLORS } from '../constants';
+
 /**
  * Formatear una fecha a string legible
  * @param {Date|Timestamp} date - Fecha a formatear
@@ -66,9 +68,9 @@ export const formatDuration = (hours) => {
  * @returns {string} - Color hexadecimal
  */
 export const getQualityColor = (quality) => {
-  if (quality >= 80) return '#27AE60'; // Verde
-  if (quality >= 60) return '#F39C12'; // Naranja
-  return '#E74C3C'; // Rojo
+  if (quality >= 80) return COLORS.success;
+  if (quality >= 60) return COLORS.warning;
+  return COLORS.error;
 };
 
 /**
