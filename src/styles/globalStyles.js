@@ -35,7 +35,7 @@ export const globalStyles = StyleSheet.create({
     borderRadius: SIZES.borderRadius.md,
     padding: SIZES.padding.lg,
     marginBottom: SIZES.padding.md,
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -87,7 +87,7 @@ export const globalStyles = StyleSheet.create({
   },
   
   shadow: {
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -95,7 +95,7 @@ export const globalStyles = StyleSheet.create({
   },
   
   divider: {
-    height: 1,
+    height: SIZES.borderWidth.thin,
     backgroundColor: COLORS.border,
     marginVertical: SIZES.padding.md,
   },
