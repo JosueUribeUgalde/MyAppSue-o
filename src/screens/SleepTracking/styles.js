@@ -64,13 +64,13 @@ const styles = StyleSheet.create({
   },
   
   timeButton: {
-    width: 44,
-    height: 44,
+    width: SIZES.button.medium.height,
+    height: SIZES.button.medium.height,
     borderRadius: SIZES.borderRadius.md,
     backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: SIZES.borderWidth.thin,
     borderColor: COLORS.border,
   },
   

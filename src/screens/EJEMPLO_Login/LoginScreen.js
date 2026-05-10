@@ -21,17 +21,26 @@ import { useAuth } from '../../hooks/useAuth';
 import { validateEmail, validateRequired } from '../../utils/validators';
 import styles from './styles';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ onContinueWithoutAccount }) => {
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   
   // Hook personalizado de autenticación
-  const { signIn, loading } = useAuth();
+  const { signIn, signUp, loading } = useAuth();
 
   // Validar formulario
   const validateForm = () => {
     const newErrors = {};
+
+    if (isRegistering) {
+      const nameValidation = validateRequired(displayName, 'El nombre');
+      if (!nameValidation.isValid) {
+        newErrors.displayName = nameValidation.message;
+      }
+    }
     
     // Validar email
     if (!validateEmail(email)) {
@@ -48,8 +57,8 @@ const LoginScreen = ({ navigation }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Manejar inicio de sesión
-  const handleLogin = async () => {
+  // Manejar inicio de sesión o registro
+  const handleSubmit = async () => {
     // Limpiar errores previos
     setErrors({});
     
@@ -58,15 +67,16 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    // Intentar iniciar sesión
-    const result = await signIn(email, password);
+    const result = isRegistering
+      ? await signUp(email, password, displayName)
+      : await signIn(email, password);
     
     if (result.success) {
-      Alert.alert('¡Éxito!', 'Bienvenido de vuelta');
+      Alert.alert('¡Éxito!', isRegistering ? 'Cuenta creada correctamente' : 'Bienvenido de vuelta');
       // La navegación será manejada automáticamente por AppNavigator
     } else {
       // Mensajes de error más amigables
-      let errorMessage = 'No se pudo iniciar sesión';
+      let errorMessage = isRegistering ? 'No se pudo crear la cuenta' : 'No se pudo iniciar sesión';
       
       if (result.error?.includes('user-not-found')) {
         errorMessage = 'No existe una cuenta con este correo';
@@ -76,6 +86,10 @@ const LoginScreen = ({ navigation }) => {
         errorMessage = 'Correo electrónico inválido';
       } else if (result.error?.includes('invalid-credential')) {
         errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña';
+      } else if (result.error?.includes('email-already-in-use')) {
+        errorMessage = 'Ya existe una cuenta con este correo';
+      } else if (result.error?.includes('weak-password')) {
+        errorMessage = 'La contraseña debe tener al menos 6 caracteres';
       }
       
       Alert.alert('Error', errorMessage);
@@ -83,14 +97,27 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F7FA' }} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Iniciar Sesión</Text>
-        <Text style={styles.subtitle}>Bienvenido de vuelta</Text>
+        <Text style={styles.title}>{isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}</Text>
+        <Text style={styles.subtitle}>
+          {isRegistering ? 'Registra tu usuario para guardar tus datos' : 'Bienvenido de vuelta'}
+        </Text>
       </View>
 
       <View style={styles.formContainer}>
+        {isRegistering && (
+          <CustomInput
+            label="Nombre"
+            placeholder="Tu nombre"
+            value={displayName}
+            onChangeText={setDisplayName}
+            autoCapitalize="words"
+            error={errors.displayName}
+          />
+        )}
+
         {/* Input de Email usando componente reutilizable */}
         <CustomInput
           label="Email"
@@ -114,11 +141,32 @@ const LoginScreen = ({ navigation }) => {
 
         {/* Botón de Login usando componente reutilizable */}
         <CustomButton
-          title={loading ? "Iniciando sesión..." : "Iniciar Sesión"}
-          onPress={handleLogin}
+          title={loading ? "Procesando..." : isRegistering ? "Crear Cuenta" : "Iniciar Sesión"}
+          onPress={handleSubmit}
           size="large"
           disabled={loading}
           style={styles.loginButton}
+        />
+
+        <CustomButton
+          title={isRegistering ? "Ya tengo cuenta" : "Crear cuenta"}
+          onPress={() => {
+            setIsRegistering(!isRegistering);
+            setErrors({});
+          }}
+          variant="outline"
+          size="large"
+          disabled={loading}
+          style={styles.signupButton}
+        />
+
+        <CustomButton
+          title="Entrar sin cuenta"
+          onPress={onContinueWithoutAccount}
+          variant="secondary"
+          size="large"
+          disabled={loading}
+          style={styles.guestButton}
         />
       </View>
     </ScrollView>

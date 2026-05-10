@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   
   divider: {
-    height: 1,
+    height: SIZES.borderWidth.thin,
     backgroundColor: COLORS.border,
     marginVertical: SIZES.padding.xs,
   },

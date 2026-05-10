@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.borderRadius.md,
     padding: SIZES.padding.lg,
     marginBottom: SIZES.padding.md,
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
