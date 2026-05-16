@@ -9,7 +9,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
-import { COLORS, SIZES } from '../constants';
+import { useTheme } from '../contexts/ThemeContext';
+import { SIZES } from '../constants';
 import LoginScreen from '../screens/EJEMPLO_Login/LoginScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import SleepTrackingScreen from '../screens/SleepTracking/SleepTrackingScreen';
@@ -24,6 +25,7 @@ import TipsScreen from '../screens/Tips/TipsScreen';
  */
 const AppNavigator = () => {
   const { user, loading } = useAuth();
+  const { colors } = useTheme();
   const [currentScreen, setCurrentScreen] = useState('Home');
   const [guestUser, setGuestUser] = useState(null);
 
@@ -52,9 +54,9 @@ const AppNavigator = () => {
   // Mostrar loading mientras se verifica la autenticación
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
           Cargando...
         </Text>
       </View>
@@ -105,13 +107,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
   },
 
   loadingText: {
     marginTop: SIZES.padding.lg,
     fontSize: SIZES.font.regular,
-    color: COLORS.textSecondary,
   },
 });
 

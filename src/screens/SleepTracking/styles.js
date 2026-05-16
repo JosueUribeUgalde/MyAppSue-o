@@ -5,12 +5,12 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../../constants';
+import { SIZES } from '../../constants';
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   
   container: {
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.font.xxxLarge,
     fontWeight: 'bold',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: SIZES.padding.lg,
     marginTop: SIZES.padding.md,
   },
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: SIZES.font.xSmall,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     letterSpacing: 1,
     marginBottom: SIZES.padding.sm,
     marginTop: SIZES.padding.md,
@@ -48,14 +48,14 @@ const styles = StyleSheet.create({
   
   timeLabel: {
     fontSize: SIZES.font.small,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.padding.xs,
   },
   
   timeValue: {
     fontSize: SIZES.font.xxxLarge * 1.2,
     fontWeight: '300',
-    color: COLORS.primary,
+    color: colors.primary,
   },
   
   timeButtons: {
@@ -67,36 +67,36 @@ const styles = StyleSheet.create({
     width: SIZES.button.medium.height,
     height: SIZES.button.medium.height,
     borderRadius: SIZES.borderRadius.md,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: SIZES.borderWidth.thin,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   
   totalCard: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: colors.primaryLight,
     opacity: 0.3,
   },
   
   totalLabel: {
     fontSize: SIZES.font.small,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: colors.primary,
     letterSpacing: 1,
     marginBottom: SIZES.padding.xs,
   },
   
   totalSubLabel: {
     fontSize: SIZES.font.small,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.padding.sm,
   },
   
   totalValue: {
     fontSize: SIZES.font.xxxLarge,
     fontWeight: 'bold',
-    color: COLORS.primary,
+    color: colors.primary,
   },
   
   qualityContainer: {
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   
   qualityLabel: {
     fontSize: SIZES.font.regular,
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: SIZES.padding.md,
   },
   
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   
   qualityValue: {
     fontSize: SIZES.font.regular,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '600',
     marginTop: SIZES.padding.xs,
   },
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.font.xLarge,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
     marginTop: SIZES.padding.xl,
     marginBottom: SIZES.padding.md,
   },
@@ -143,15 +143,100 @@ const styles = StyleSheet.create({
   
   recordDate: {
     fontSize: SIZES.font.regular,
-    color: COLORS.text,
+    color: colors.text,
     fontWeight: '500',
+    marginBottom: SIZES.padding.xs,
+  },
+
+  recordQuality: {
+    fontSize: SIZES.font.small,
+    color: colors.textSecondary,
   },
   
   recordHours: {
     fontSize: SIZES.font.large,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: 'bold',
+  },
+
+  emptyRecords: {
+    alignItems: 'center',
+    paddingVertical: SIZES.padding.md,
+  },
+
+  emptyRecordsText: {
+    fontSize: SIZES.font.small,
+    color: colors.textSecondary,
+    marginTop: SIZES.padding.sm,
+    textAlign: 'center',
+  },
+
+  datePickerCard: {
+    flexDirection: 'column',
+    paddingVertical: SIZES.padding.lg,
+  },
+
+  datePickerContent: {
+    alignItems: 'center',
+    marginBottom: SIZES.padding.xl,
+  },
+
+  dateLabel: {
+    fontSize: SIZES.font.xSmall,
+    color: colors.textSecondary,
+    marginBottom: SIZES.padding.sm,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+
+  dateValue: {
+    fontSize: SIZES.font.large,
+    fontWeight: '600',
+    color: colors.secondary,
+    textAlign: 'center',
+    textTransform: 'capitalize',
+  },
+
+  dateButtonsContainer: {
+    alignItems: 'center',
+  },
+
+  dateNavigationButtons: {
+    flexDirection: 'row',
+    gap: SIZES.padding.md,
+    alignItems: 'center',
+  },
+
+  dateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingVertical: SIZES.padding.md,
+    paddingHorizontal: SIZES.padding.lg,
+    borderRadius: SIZES.borderRadius.md,
+    gap: SIZES.padding.xs,
+  },
+
+  dateButtonText: {
+    fontSize: SIZES.font.regular,
+    color: colors.textLight,
+    fontWeight: '600',
+  },
+
+  warningCard: {
+    backgroundColor: '#FFF3CD',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FFC107',
+    padding: SIZES.padding.md,
+    marginBottom: SIZES.padding.md,
+    borderRadius: SIZES.borderRadius.md,
+  },
+
+  warningText: {
+    fontSize: SIZES.font.small,
+    color: '#856404',
+    lineHeight: 20,
   },
 });
 
-export default styles;
+export default createStyles;

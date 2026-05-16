@@ -3,9 +3,10 @@
  * 
  * Este archivo centraliza todos los colores utilizados en la app.
  * Facilita el mantenimiento y permite cambiar el tema fácilmente.
- * Uso: import { COLORS } from '@/constants';
+ * Uso: import { COLORS, DARK_COLORS } from '@/constants';
  */
 
+// TEMA CLARO (DEFAULT)
 export const COLORS = {
   // Colores primarios - Morado principal
   primary: '#969AB4',        // Morado lavanda principal
@@ -55,4 +56,56 @@ export const COLORS = {
   // Gradientes (arrays para uso con LinearGradient)
   gradientNight: ['#1A1A2E', '#6B6F8A', '#969AB4'],
   gradientDay: ['#969AB4', '#B8BCCE', '#E2B95C'],
+};
+
+// TEMA OSCURO
+export const DARK_COLORS = {
+  // Colores primarios - Morado principal (más vibrantes en oscuro)
+  primary: '#A5A9C5',        // Morado lavanda más claro
+  primaryDark: '#6B6F8A',    // Morado medio
+  primaryLight: '#C5C9DD',   // Morado muy claro
+  
+  // Colores secundarios
+  secondary: '#4DA3C4',      // Azul cian más claro
+  secondaryDark: '#0179A5',  // Azul medio
+  secondaryLight: '#7BC3DC', // Azul muy claro
+  
+  // Colores de fondo
+  background: '#0F0F1E',     // Fondo principal muy oscuro
+  backgroundDark: '#0A0A15', // Fondo aún más oscuro
+  surface: '#1A1A2E',        // Superficie de tarjetas oscura
+  surfaceDark: '#16213E',    // Superficie más oscura
+  
+  // Colores de texto
+  text: '#E8EAED',           // Texto principal claro
+  textSecondary: '#9CA3AF',  // Texto secundario gris
+  textLight: '#FFFFFF',      // Texto muy claro
+  textDark: '#6B7280',       // Texto oscuro/deshabilitado
+  
+  // Colores de acento
+  accent: '#F5C563',         // Amarillo dorado más brillante
+  accentDark: '#E2B95C',     // Dorado medio
+  coral: '#E87D72',          // Coral más brillante
+  
+  // Estados
+  success: '#34D399',        // Verde más brillante
+  warning: '#FBBF24',        // Amarillo advertencia brillante
+  error: '#F87171',          // Rojo más brillante
+  info: '#60A5FA',           // Azul información brillante
+  
+  // Sueño específico
+  deepSleep: '#8B8FB0',      // Sueño profundo más claro
+  lightSleep: '#C5C9DD',     // Sueño ligero muy claro
+  rem: '#A5A9C5',            // Sueño REM
+  awake: '#F5C563',          // Despierto dorado brillante
+  
+  // Utilidades
+  border: '#374151',         // Bordes grises oscuros
+  disabled: '#6B7280',       // Elementos deshabilitados
+  shadow: '#000000',         // Sombras
+  overlay: 'rgba(0,0,0,0.7)', // Overlay más oscuro
+  
+  // Gradientes
+  gradientNight: ['#0A0A15', '#1A1A2E', '#6B6F8A'],
+  gradientDay: ['#6B6F8A', '#969AB4', '#E2B95C'],
 };

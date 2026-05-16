@@ -15,7 +15,7 @@
 import React from 'react';
 import { View, TextInput, Text } from 'react-native';
 import styles from './styles';
-import { COLORS } from '../../../constants';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 const CustomInput = ({ 
   placeholder, 
@@ -27,19 +27,25 @@ const CustomInput = ({
   style,
   ...props 
 }) => {
+  const { colors } = useTheme();
+  
   return (
     <View style={[styles.container, style]}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Text style={[styles.label, { color: colors.text }]}>{label}</Text> : null}
       <TextInput
-        style={[styles.input, error ? styles.inputError : null]}
+        style={[
+          styles.input, 
+          error ? styles.inputError : null,
+          { color: colors.text, backgroundColor: colors.surface, borderColor: error ? colors.error : colors.border }
+        ]}
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
-        placeholderTextColor={COLORS.textSecondary}
+        placeholderTextColor={colors.textSecondary}
         {...props}
       />
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text> : null}
     </View>
   );
 };

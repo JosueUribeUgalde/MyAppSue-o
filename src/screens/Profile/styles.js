@@ -5,12 +5,12 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../../constants';
+import { SIZES } from '../../constants';
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   
   container: {
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: SIZES.borderRadius.full,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SIZES.padding.md,
@@ -37,25 +37,25 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: SIZES.font.xxxLarge,
     fontWeight: 'bold',
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   
   name: {
     fontSize: SIZES.font.xLarge,
     fontWeight: 'bold',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: SIZES.padding.xs,
   },
   
   email: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   
   sectionTitle: {
     fontSize: SIZES.font.large,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
     marginTop: SIZES.padding.lg,
     marginBottom: SIZES.padding.md,
   },
@@ -69,25 +69,68 @@ const styles = StyleSheet.create({
   
   statLabel: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   
   statValue: {
     fontSize: SIZES.font.regular,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: colors.primary,
   },
   
   divider: {
     height: SIZES.borderWidth.thin,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     marginVertical: SIZES.padding.xs,
   },
   
   optionText: {
     fontSize: SIZES.font.regular,
-    color: COLORS.text,
+    color: colors.text,
     fontWeight: '500',
+  },
+
+  optionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  optionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+
+  optionIcon: {
+    marginRight: SIZES.padding.md,
+  },
+
+  optionContent: {
+    flex: 1,
+  },
+
+  optionDescription: {
+    fontSize: SIZES.font.small,
+    color: colors.textSecondary,
+    marginTop: SIZES.padding.xs / 2,
+  },
+
+  loadingStats: {
+    alignItems: 'center',
+    paddingVertical: SIZES.padding.lg,
+  },
+
+  emptyStats: {
+    alignItems: 'center',
+    paddingVertical: SIZES.padding.lg,
+  },
+
+  emptyStatsText: {
+    fontSize: SIZES.font.small,
+    color: colors.textSecondary,
+    marginTop: SIZES.padding.sm,
+    textAlign: 'center',
   },
   
   logoutContainer: {
@@ -96,4 +139,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+export default createStyles;

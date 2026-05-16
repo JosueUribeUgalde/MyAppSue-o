@@ -11,9 +11,10 @@
  */
 
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configuración de Firebase - Credenciales del proyecto SleepTrack
 const firebaseConfig = {
@@ -30,9 +31,10 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-
-// Exportar servicios de Firebase
-export const auth = getAuth(app);
+// Inicializar Auth con persistencia en AsyncStorage
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 

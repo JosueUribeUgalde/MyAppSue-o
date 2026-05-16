@@ -16,11 +16,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomButton, CustomInput, Card, BottomTabBar } from '../../components';
-import { COLORS } from '../../constants';
-import { guardarRegistroSueno } from '../../services/sleepService';
-import styles from './styles';
+import { SIZES } from '../../constants';
+import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../contexts/ThemeContext';
+import { guardarRegistroSueno, verificarRegistroDuplicado, getSleepRecords } from '../../services/sleepService';
+import createStyles from './styles';
 
 const SleepTrackingScreen = ({ navigation }) => {
+  const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  
+  // Estados para fecha
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [existeRegistro, setExisteRegistro] = useState(false);
+  
   // Estados para las horas
   const [bedTime, setBedTime] = useState(new Date());
   const [wakeTime, setWakeTime] = useState(new Date());
@@ -32,6 +43,7 @@ const SleepTrackingScreen = ({ navigation }) => {
   const [notes, setNotes] = useState('');
   const [totalSleep, setTotalSleep] = useState('');
   const [loading, setLoading] = useState(false);
+  const [recentRecords, setRecentRecords] = useState([]);
 
   // Inicializar horas por defecto
   useEffect(() => {
@@ -44,6 +56,38 @@ const SleepTrackingScreen = ({ navigation }) => {
     setBedTime(bed);
     setWakeTime(wake);
   }, []);
+
+  // Cargar registros recientes
+  useEffect(() => {
+    const cargarRegistrosRecientes = async () => {
+      if (!user || user.isGuest) return;
+      
+      const resultado = await getSleepRecords(user.uid);
+      if (resultado.success) {
+        setRecentRecords(resultado.data.slice(0, 2)); // Solo los últimos 2
+      }
+    };
+    
+    cargarRegistrosRecientes();
+  }, [user]);
+
+  // Verificar si ya existe un registro para la fecha seleccionada
+  useEffect(() => {
+    const verificarFecha = async () => {
+      if (!user || user.isGuest) return;
+      
+      const fechaFormato = formatDate(selectedDate);
+      const resultado = await verificarRegistroDuplicado(user.uid, fechaFormato);
+      
+      if (resultado.success && resultado.existe) {
+        setExisteRegistro(true);
+      } else {
+        setExisteRegistro(false);
+      }
+    };
+    
+    verificarFecha();
+  }, [selectedDate, user]);
 
   // Calcular tiempo total de sueño
   useEffect(() => {
@@ -79,6 +123,41 @@ const SleepTrackingScreen = ({ navigation }) => {
     return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
 
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0]; // YYYY-MM-DD
+  };
+
+  const formatDateDisplay = (date) => {
+    return date.toLocaleDateString('es-ES', { 
+      weekday: 'long',
+      day: 'numeric', 
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  const handleDateChange = (event, date) => {
+    setShowDatePicker(Platform.OS === 'ios');
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
+
+  const adjustDate = (days) => {
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + days);
+    
+    // No permitir fechas futuras
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    if (newDate > today) {
+      Alert.alert('Fecha inválida', 'No puedes registrar sueño para fechas futuras');
+      return;
+    }
+    
+    setSelectedDate(newDate);
+  };
+
   // Obtener texto y emoji de calidad según el valor
   const getCalidadInfo = (qualityValue) => {
     const calidades = {
@@ -95,12 +174,41 @@ const SleepTrackingScreen = ({ navigation }) => {
     try {
       setLoading(true);
 
+      // Validar que haya usuario
+      if (!user || user.isGuest) {
+        Alert.alert('Error', 'Necesitas iniciar sesión para guardar registros');
+        return;
+      }
+
+      // Formatear fecha seleccionada
+      const fechaSueno = formatDate(selectedDate);
+
+      // Verificar si ya existe un registro para esta fecha
+      const validacion = await verificarRegistroDuplicado(user.uid, fechaSueno);
+      
+      if (validacion.existe) {
+        Alert.alert(
+          'Registro duplicado',
+          `Ya existe un registro de sueño para ${formatDateDisplay(selectedDate)}. ¿Deseas reemplazarlo?`,
+          [
+            {
+              text: 'Cancelar',
+              style: 'cancel'
+            },
+            {
+              text: 'Reemplazar',
+              onPress: async () => {
+                // Aquí podrías implementar la actualización del registro
+                Alert.alert('Información', 'Función de reemplazo pendiente. Por ahora, elimina el registro anterior desde el historial.');
+              }
+            }
+          ]
+        );
+        return;
+      }
+
       // Obtener info de calidad
       const calidadInfo = getCalidadInfo(quality);
-
-      // Formatear fecha en formato YYYY-MM-DD
-      const today = new Date();
-      const fechaSueno = today.toISOString().split('T')[0];
 
       // Preparar datos según el modelo de la base de datos
       const datosDelFormulario = {
@@ -125,11 +233,21 @@ const SleepTrackingScreen = ({ navigation }) => {
           'Registro de sueño guardado correctamente',
           [
             {
+              text: 'Ver en Inicio',
+              onPress: () => navigation.navigate('Home')
+            },
+            {
               text: 'OK',
-              onPress: () => {
+              onPress: async () => {
                 // Resetear formulario
                 setNotes('');
                 setQuality(3);
+                setSelectedDate(new Date());
+                // Recargar registros recientes
+                const resultado = await getSleepRecords(user.uid);
+                if (resultado.success) {
+                  setRecentRecords(resultado.data.slice(0, 2));
+                }
               }
             }
           ]
@@ -156,6 +274,66 @@ const SleepTrackingScreen = ({ navigation }) => {
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Registrar Sueño</Text>
 
+        {/* Selector de Fecha */}
+        <Text style={styles.label}>FECHA DEL SUEÑO</Text>
+        <Card>
+          <View style={styles.datePickerCard}>
+            <View style={styles.datePickerContent}>
+              <Text style={styles.dateLabel}>FECHA SELECCIONADA</Text>
+              <Text style={styles.dateValue}>
+                {formatDateDisplay(selectedDate)}
+              </Text>
+            </View>
+            
+            <View style={styles.dateButtonsContainer}>
+              <View style={styles.dateNavigationButtons}>
+                <TouchableOpacity 
+                  style={styles.timeButton}
+                  onPress={() => adjustDate(-1)}
+                >
+                  <Ionicons name="chevron-back" size={24} color={colors.secondary} />
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={styles.dateButton}
+                  onPress={() => setShowDatePicker(true)}
+                >
+                  <Ionicons name="calendar-outline" size={20} color={colors.textLight} />
+                  <Text style={styles.dateButtonText}>Calendario</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={styles.timeButton}
+                  onPress={() => adjustDate(1)}
+                >
+                  <Ionicons name="chevron-forward" size={24} color={colors.secondary} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Card>
+
+        {/* Date Picker */}
+        {showDatePicker && (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleDateChange}
+            maximumDate={new Date()}
+            locale="es-ES"
+          />
+        )}
+
+        {/* Advertencia de registro duplicado */}
+        {existeRegistro && (
+          <View style={styles.warningCard}>
+            <Text style={styles.warningText}>
+              ⚠️ Ya existe un registro para esta fecha. Si guardas, se te pedirá confirmación para reemplazarlo.
+            </Text>
+          </View>
+        )}
+
         {/* Hora de Dormir */}
         <Text style={styles.label}>HORA DE DORMIR</Text>
         <Card>
@@ -170,14 +348,14 @@ const SleepTrackingScreen = ({ navigation }) => {
                 style={styles.timeButton}
                 onPress={() => adjustTime('bed', -15)}
               >
-                <Ionicons name="remove" size={24} color={COLORS.primary} />
+                <Ionicons name="remove" size={24} color={colors.primary} />
               </TouchableOpacity>
               
               <TouchableOpacity 
                 style={styles.timeButton}
                 onPress={() => adjustTime('bed', 15)}
               >
-                <Ionicons name="add" size={24} color={COLORS.primary} />
+                <Ionicons name="add" size={24} color={colors.primary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -197,14 +375,14 @@ const SleepTrackingScreen = ({ navigation }) => {
                 style={styles.timeButton}
                 onPress={() => adjustTime('wake', -15)}
               >
-                <Ionicons name="remove" size={24} color={COLORS.textSecondary} />
+                <Ionicons name="remove" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
               
               <TouchableOpacity 
                 style={styles.timeButton}
                 onPress={() => adjustTime('wake', 15)}
               >
-                <Ionicons name="add" size={24} color={COLORS.textSecondary} />
+                <Ionicons name="add" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -232,7 +410,7 @@ const SleepTrackingScreen = ({ navigation }) => {
                   <Ionicons
                     name={star <= quality ? 'star' : 'star-outline'}
                     size={40}
-                    color={star <= quality ? COLORS.accent : COLORS.disabled}
+                    color={star <= quality ? colors.accent : colors.disabled}
                   />
                 </TouchableOpacity>
               ))}
@@ -265,21 +443,42 @@ const SleepTrackingScreen = ({ navigation }) => {
           disabled={loading}
         />
 
+        {/* Registros Recientes */}
         <Text style={styles.sectionTitle}>Registros Recientes</Text>
         
-        <Card>
-          <View style={styles.recordItem}>
-            <Text style={styles.recordDate}>16 Abril 2026</Text>
-            <Text style={styles.recordHours}>7.5 horas</Text>
-          </View>
-        </Card>
-
-        <Card>
-          <View style={styles.recordItem}>
-            <Text style={styles.recordDate}>15 Abril 2026</Text>
-            <Text style={styles.recordHours}>8.0 horas</Text>
-          </View>
-        </Card>
+        {recentRecords.length > 0 ? (
+          recentRecords.map((record) => (
+            <Card key={record.id} style={{ marginBottom: SIZES.padding.sm }}>
+              <View style={styles.recordItem}>
+                <View>
+                  <Text style={styles.recordDate}>
+                    {new Date(record.fecha_sueno).toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </Text>
+                  <Text style={styles.recordQuality}>
+                    {record.calidad_emoji} {record.calidad_texto}
+                  </Text>
+                </View>
+                <Text style={styles.recordHours}>{record.horas_totales}</Text>
+              </View>
+            </Card>
+          ))
+        ) : (
+          <Card>
+            <View style={styles.emptyRecords}>
+              <Ionicons name="moon-outline" size={32} color={colors.textSecondary} />
+              <Text style={styles.emptyRecordsText}>
+                No hay registros previos
+              </Text>
+            </View>
+          </Card>
+        )}
+        
+        {/* Espacio inferior para separar del menú */}
+        <View style={{ height: SIZES.padding.xxl }} />
       </ScrollView>
       
       <BottomTabBar navigation={navigation} currentScreen="SleepTracking" />

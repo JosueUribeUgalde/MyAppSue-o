@@ -3,12 +3,12 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../../constants';
+import { SIZES } from '../../constants';
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   
   content: {
@@ -24,26 +24,26 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.font.xxxLarge,
     fontWeight: 'bold',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: SIZES.padding.xs,
   },
   
   subtitle: {
     fontSize: SIZES.font.large,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   
   cardTitle: {
     fontSize: SIZES.font.large,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: SIZES.padding.md,
   },
   
   cardText: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
 });
 
-export default styles;
+export default createStyles;

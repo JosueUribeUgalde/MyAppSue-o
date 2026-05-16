@@ -10,72 +10,132 @@
  * - Acceso rápido a registrar sueño
  */
 
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomButton, Card, BottomTabBar } from '../../components';
-import { COLORS } from '../../constants';
-import styles from './styles';
+import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getSleepRecords, calculateWeeklyStats } from '../../services/sleepService';
+import createStyles from './styles';
 
 const HomeScreen = ({ navigation }) => {
+  const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadData = useCallback(async () => {
+    if (!user || user.isGuest) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const result = await getSleepRecords(user.uid);
+    if (result.success) {
+      setRecords(result.data);
+    }
+    setLoading(false);
+  }, [user]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const lastRecord = records[0] || null;
+  const weeklyRecords = records.slice(0, 7);
+  const stats = calculateWeeklyStats(weeklyRecords);
+
+  const userName = user?.displayName
+    ? user.displayName.split(' ')[0]
+    : user?.isGuest
+    ? 'Invitado'
+    : '';
+
   return (
-    <SafeAreaView style={styles.wrapper} edges={['top']}>
+    <SafeAreaView style={[styles.wrapper, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>¡Bienvenido!</Text>
-        <Text style={styles.subtitle}>¿Cómo dormiste anoche?</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          {userName ? `¡Hola, ${userName}!` : '¡Bienvenido!'}
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>¿Cómo dormiste anoche?</Text>
       </View>
 
-      <LinearGradient
-        colors={[COLORS.primary, COLORS.secondary]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.lastNightCard}
-      >
-        <Text style={styles.lastNightTitle}>Última noche</Text>
-        
-        <View style={styles.lastNightContent}>
-          <View style={styles.lastNightLeft}>
-            <Text style={styles.lastNightLabel}>Duración</Text>
-            <Text style={styles.lastNightValue}>6.4h</Text>
-            
-            <View style={styles.lastNightTimes}>
-              <View style={styles.timeItem}>
-                <Ionicons name="bed-outline" size={20} color={COLORS.textLight} />
-                <Text style={styles.timeText}>22:50</Text>
-              </View>
-              
-              <View style={styles.timeItem}>
-                <Ionicons name="sunny-outline" size={20} color={COLORS.textLight} />
-                <Text style={styles.timeText}>7:41</Text>
+      {/* Tarjeta de última noche */}
+      {loading ? (
+        <View style={styles.loadingCard}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={{ color: colors.textSecondary, marginTop: 12 }}>Cargando datos...</Text>
+        </View>
+      ) : lastRecord ? (
+        <LinearGradient
+          colors={[colors.primary, colors.secondary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.lastNightCard}
+        >
+          <Text style={styles.lastNightTitle}>Última noche</Text>
+
+          <View style={styles.lastNightContent}>
+            <View style={styles.lastNightLeft}>
+              <Text style={styles.lastNightLabel}>Duración</Text>
+              <Text style={styles.lastNightValue}>{lastRecord.horas_totales}</Text>
+
+              <View style={styles.lastNightTimes}>
+                <View style={styles.timeItem}>
+                  <Ionicons name="bed-outline" size={20} color={colors.textLight} />
+                  <Text style={styles.timeText}>{lastRecord.hora_dormir}</Text>
+                </View>
+                <View style={styles.timeItem}>
+                  <Ionicons name="sunny-outline" size={20} color={colors.textLight} />
+                  <Text style={styles.timeText}>{lastRecord.hora_despertar}</Text>
+                </View>
               </View>
             </View>
-          </View>
-          
-          <View style={styles.lastNightRight}>
-            <Ionicons name="star" size={60} color={COLORS.coral} />
-          </View>
-        </View>
-      </LinearGradient>
 
-      <Card>
-        <View style={styles.cardTitleContainer}>
-          <Ionicons name="trending-up" size={24} color={COLORS.primary} style={styles.cardTitleIcon} />
-          <Text style={styles.cardTitle}>Promedio Semanal</Text>
-        </View>
-        <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statBoxLabel}>Calidad</Text>
-            <Text style={styles.statBoxValue}>3.4/5</Text>
+            <View style={styles.lastNightRight}>
+              <Text style={{ fontSize: 52 }}>{lastRecord.calidad_emoji}</Text>
+              <Text style={{ color: colors.textLight, fontSize: 12, marginTop: 4 }}>
+                {lastRecord.calidad_texto}
+              </Text>
+            </View>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statBoxLabel}>Duración</Text>
-            <Text style={styles.statBoxValue}>7.7h</Text>
-          </View>
+        </LinearGradient>
+      ) : (
+        <View style={styles.emptyStateCard}>
+          <Ionicons name="moon-outline" size={56} color={colors.primary} />
+          <Text style={[styles.emptyStateTitle, { color: colors.text }]}>Sin registros aún</Text>
+          <Text style={[styles.emptyStateText, { color: colors.textSecondary }]}>
+            Registra tu primer sueño para ver{'\n'}tus estadísticas aquí
+          </Text>
         </View>
-      </Card>
+      )}
+
+      {/* Promedio semanal: solo si hay datos */}
+      {!loading && weeklyRecords.length > 0 && (
+        <Card>
+          <View style={styles.cardTitleContainer}>
+            <Ionicons name="trending-up" size={24} color={colors.primary} style={styles.cardTitleIcon} />
+            <Text style={[styles.cardTitle, { color: colors.text }]}>
+              Promedio Semanal ({stats.totalNights} noche{stats.totalNights !== 1 ? 's' : ''})
+            </Text>
+          </View>
+          <View style={styles.statsRow}>
+            <View style={styles.statBox}>
+              <Text style={[styles.statBoxLabel, { color: colors.textSecondary }]}>Calidad</Text>
+              <Text style={[styles.statBoxValue, { color: colors.primary }]}>{stats.averageQuality}/5</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={[styles.statBoxLabel, { color: colors.textSecondary }]}>Duración</Text>
+              <Text style={[styles.statBoxValue, { color: colors.primary }]}>{stats.averageDuration}h</Text>
+            </View>
+          </View>
+        </Card>
+      )}
 
       <View style={styles.buttonContainer}>
         <CustomButton 
@@ -87,24 +147,24 @@ const HomeScreen = ({ navigation }) => {
 
       <View style={styles.actionBoxesContainer}>
         <TouchableOpacity 
-          style={styles.actionBox}
+          style={[styles.actionBox, { backgroundColor: colors.surface }]}
           onPress={() => navigation.navigate('Statistics')}
         >
-          <Ionicons name="calendar-outline" size={32} color={COLORS.secondary} />
-          <Text style={styles.actionBoxText}>Ver estadísticas</Text>
+          <Ionicons name="calendar-outline" size={32} color={colors.secondary} />
+          <Text style={[styles.actionBoxText, { color: colors.text }]}>Ver estadísticas</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.actionBox}
+          style={[styles.actionBox, { backgroundColor: colors.surface }]}
           onPress={() => navigation.navigate('History')}
         >
-          <Ionicons name="time-outline" size={32} color={COLORS.coral} />
-          <Text style={styles.actionBoxText}>Ver historial</Text>
+          <Ionicons name="time-outline" size={32} color={colors.coral} />
+          <Text style={[styles.actionBoxText, { color: colors.text }]}>Ver historial</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
     
-    <BottomTabBar navigation ={navigation} currentScreen="Home" />
+    <BottomTabBar navigation={navigation} currentScreen="Home" />
   </SafeAreaView>
   );
 };
