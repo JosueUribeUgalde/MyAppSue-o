@@ -13,10 +13,12 @@ import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../../constants';
-import styles from './styles';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { SIZES } from '../../../constants';
 
 const BottomTabBar = ({ navigation, currentScreen = 'Home' }) => {
+  const { colors } = useTheme();
+  
   const tabs = [
     {
       name: 'Home',
@@ -48,6 +50,12 @@ const BottomTabBar = ({ navigation, currentScreen = 'Home' }) => {
       icon: 'bulb-outline',
       iconActive: 'bulb',
     },
+    {
+      name: 'Profile',
+      label: 'Perfil',
+      icon: 'person-outline',
+      iconActive: 'person',
+    },
   ];
 
   const handleTabPress = (tabName) => {
@@ -57,27 +65,44 @@ const BottomTabBar = ({ navigation, currentScreen = 'Home' }) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
-      <View style={styles.container}>
+    <SafeAreaView style={{ backgroundColor: colors.surface }} edges={['bottom']}>
+      <View style={{
+        flexDirection: 'row',
+        backgroundColor: colors.surface,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        paddingVertical: SIZES.padding.xs,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 5,
+      }}>
         {tabs.map((tab) => {
         const isActive = currentScreen === tab.name;
         return (
           <TouchableOpacity
             key={tab.name}
-            style={styles.tab}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              paddingVertical: SIZES.padding.xs,
+            }}
             onPress={() => handleTabPress(tab.name)}
             activeOpacity={0.7}
           >
             <Ionicons
               name={isActive ? tab.iconActive : tab.icon}
               size={24}
-              color={isActive ? COLORS.primary : COLORS.textSecondary}
+              color={isActive ? colors.primary : colors.textSecondary}
             />
             <Text
-              style={[
-                styles.tabLabel,
-                isActive && styles.tabLabelActive,
-              ]}
+              style={{
+                fontSize: SIZES.font.xSmall,
+                marginTop: 4,
+                color: isActive ? colors.primary : colors.textSecondary,
+                fontWeight: isActive ? '600' : 'normal',
+              }}
             >
               {tab.label}
             </Text>

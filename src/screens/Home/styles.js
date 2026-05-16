@@ -6,12 +6,12 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../../constants';
+import { SIZES } from '../../constants';
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   
   container: {
@@ -27,20 +27,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.font.xxxLarge,
     fontWeight: 'bold',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: SIZES.padding.xs,
   },
   
   subtitle: {
     fontSize: SIZES.font.large,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   
   lastNightCard: {
     borderRadius: SIZES.borderRadius.lg,
     padding: SIZES.padding.xl,
     marginBottom: SIZES.padding.lg,
-    shadowColor: COLORS.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   lastNightTitle: {
     fontSize: SIZES.font.large,
     fontWeight: '600',
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginBottom: SIZES.padding.md,
   },
   
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   
   lastNightLabel: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textLight,
+    color: colors.textLight,
     opacity: 0.9,
     marginBottom: SIZES.padding.xs,
   },
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   lastNightValue: {
     fontSize: SIZES.font.xxxLarge * 1.5,
     fontWeight: 'bold',
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginBottom: SIZES.padding.md,
   },
   
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   
   timeText: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textLight,
+    color: colors.textLight,
     fontWeight: '500',
   },
   
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: SIZES.font.large,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   
   cardTitleContainer: {
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   
   cardText: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.padding.xs,
   },
   
@@ -139,17 +139,17 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: SIZES.font.xxxLarge,
     fontWeight: 'bold',
-    color: COLORS.primary,
+    color: colors.primary,
   },
   
   statLabel: {
     fontSize: SIZES.font.small,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.padding.xs,
   },
   
   statBox: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.borderRadius.md,
     padding: SIZES.padding.lg,
     flex: 1,
@@ -159,14 +159,14 @@ const styles = StyleSheet.create({
   
   statBoxLabel: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.padding.xl,
   },
   
   statBoxValue: {
     fontSize: SIZES.font.xxLarge,
     fontWeight: 'bold',
-    color: COLORS.secondary,
+    color: colors.secondary,
   },
   
   buttonContainer: {
@@ -182,12 +182,12 @@ const styles = StyleSheet.create({
   
   actionBox: {
     flex: 1,
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.borderRadius.lg,
     padding: SIZES.padding.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -199,10 +199,50 @@ const styles = StyleSheet.create({
   
   actionBoxText: {
     fontSize: SIZES.font.regular,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.padding.sm,
     textAlign: 'center',
   },
+
+  emptyStateCard: {
+    borderRadius: SIZES.borderRadius.lg,
+    padding: SIZES.padding.xl,
+    marginBottom: SIZES.padding.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+    minHeight: 160,
+  },
+
+  emptyStateTitle: {
+    fontSize: SIZES.font.xLarge,
+    fontWeight: '600',
+    color: colors.text,
+    marginTop: SIZES.padding.md,
+    marginBottom: SIZES.padding.xs,
+  },
+
+  emptyStateText: {
+    fontSize: SIZES.font.regular,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+
+  loadingCard: {
+    borderRadius: SIZES.borderRadius.lg,
+    padding: SIZES.padding.xl,
+    marginBottom: SIZES.padding.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    minHeight: 160,
+  },
 });
 
-export default styles;
+export default createStyles;

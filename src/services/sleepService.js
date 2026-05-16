@@ -21,7 +21,6 @@ import {
   doc, 
   query, 
   where, 
-  orderBy,
   Timestamp,
   serverTimestamp
 } from 'firebase/firestore';
@@ -64,15 +63,21 @@ export const getSleepRecords = async (userId, limit = 30) => {
   try {
     const q = query(
       collection(db, SLEEP_COLLECTION),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('id_usuario', '==', userId)
     );
 
     const querySnapshot = await getDocs(q);
     const records = [];
-    
-    querySnapshot.forEach((doc) => {
-      records.push({ id: doc.id, ...doc.data() });
+
+    querySnapshot.forEach((docSnap) => {
+      records.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    // Ordenar por fecha_creacion descendente en el cliente
+    records.sort((a, b) => {
+      const dateA = a.fecha_creacion?.toDate?.() ?? new Date(a.fecha_creacion ?? 0);
+      const dateB = b.fecha_creacion?.toDate?.() ?? new Date(b.fecha_creacion ?? 0);
+      return dateB - dateA;
     });
 
     return { success: true, data: records };
@@ -119,6 +124,16 @@ export const deleteSleepRecord = async (recordId) => {
  * @param {Array} records - Array de registros de sueño
  * @returns {Object} - Estadísticas calculadas
  */
+// Convierte cadenas como "7h 30m" o "6h" a número de horas
+const parsearHoras = (horasTotales) => {
+  if (!horasTotales) return 0;
+  const match = String(horasTotales).match(/(\d+)h\s*(\d*)m?/);
+  if (!match) return parseFloat(horasTotales) || 0;
+  const horas = parseInt(match[1]) || 0;
+  const minutos = parseInt(match[2]) || 0;
+  return horas + minutos / 60;
+};
+
 export const calculateWeeklyStats = (records) => {
   if (!records || records.length === 0) {
     return {
@@ -128,14 +143,42 @@ export const calculateWeeklyStats = (records) => {
     };
   }
 
-  const totalDuration = records.reduce((sum, record) => sum + (record.duration || 0), 0);
-  const totalQuality = records.reduce((sum, record) => sum + (record.quality || 0), 0);
+  const totalDuration = records.reduce((sum, record) => sum + parsearHoras(record.horas_totales), 0);
+  const totalQuality = records.reduce((sum, record) => sum + (record.id_calidad || 0), 0);
 
   return {
     averageDuration: (totalDuration / records.length).toFixed(1),
-    averageQuality: Math.round(totalQuality / records.length),
+    averageQuality: (totalQuality / records.length).toFixed(1),
     totalNights: records.length,
   };
+};
+
+/**
+ * Verificar si ya existe un registro para una fecha específica
+ * @param {string} userId - ID del usuario
+ * @param {string} fechaSueno - Fecha en formato YYYY-MM-DD
+ * @returns {Promise<Object>} - { existe: boolean, registro: Object|null }
+ */
+export const verificarRegistroDuplicado = async (userId, fechaSueno) => {
+  try {
+    const q = query(
+      collection(db, SLEEP_COLLECTION),
+      where('id_usuario', '==', userId),
+      where('fecha_sueno', '==', fechaSueno)
+    );
+
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const registro = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+      return { success: true, existe: true, registro };
+    }
+    
+    return { success: true, existe: false, registro: null };
+  } catch (error) {
+    console.error("Error al verificar duplicados:", error);
+    return { success: false, error: error.message, existe: false };
+  }
 };
 
 /**

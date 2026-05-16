@@ -1,11 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../../constants';
+import { SIZES } from '../../constants';
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        // Usa tu color de fondo definido en la paleta
-        backgroundColor: COLORS.background || '#F5F5F5',
+        backgroundColor: colors.background,
     },
     content: {
         flex: 1,
@@ -18,23 +17,86 @@ const styles = StyleSheet.create({
     title: {
         fontSize: SIZES.font.xxxLarge,
         fontWeight: 'bold',
-        color: COLORS.text, // #2C3E50
+        color: colors.text,
         marginBottom: SIZES.padding.xs,
     },
     subtitle: {
         fontSize: SIZES.font.large,
-        color: COLORS.textSecondary, // #7F8C8D
+        color: colors.textSecondary,
     },
     cardTitle: {
         fontSize: SIZES.font.large,
         fontWeight: '600',
-        color: COLORS.text,
+        color: colors.text,
         marginBottom: SIZES.padding.md,
     },
     cardText: {
         fontSize: SIZES.font.regular,
-        color: COLORS.textSecondary,
+        color: colors.textSecondary,
+    },
+    weekRange: {
+        fontSize: SIZES.font.small,
+        color: colors.textSecondary,
+        textAlign: 'center',
+        marginBottom: SIZES.padding.lg,
+        fontStyle: 'italic',
+    },
+    statsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: SIZES.padding.md,
+        marginBottom: SIZES.padding.lg,
+    },
+    statCard: {
+        flex: 1,
+        minWidth: '45%',
+        backgroundColor: colors.surface,
+        padding: SIZES.padding.lg,
+        borderRadius: SIZES.borderRadius.md,
+        alignItems: 'center',
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 3,
+    },
+    statLabel: {
+        fontSize: SIZES.font.small,
+        color: colors.textSecondary,
+        marginBottom: SIZES.padding.xs,
+        textAlign: 'center',
+    },
+    statValue: {
+        fontSize: SIZES.font.xxLarge,
+        fontWeight: 'bold',
+        color: colors.primary,
+    },
+    emptyState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: SIZES.padding.xxl,
+        backgroundColor: colors.surface,
+        borderRadius: SIZES.borderRadius.lg,
+        marginBottom: SIZES.padding.lg,
+    },
+    emptyStateTitle: {
+        fontSize: SIZES.font.xLarge,
+        fontWeight: '600',
+        color: colors.text,
+        marginTop: SIZES.padding.md,
+        marginBottom: SIZES.padding.xs,
+    },
+    emptyStateText: {
+        fontSize: SIZES.font.regular,
+        color: colors.textSecondary,
+        textAlign: 'center',
+        lineHeight: 22,
+    },
+    loadingContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: SIZES.padding.xxl,
     },
 });
 
-export default styles ;
+export default createStyles;
