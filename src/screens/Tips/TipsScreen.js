@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBar, Card } from '../../components';
 import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../contexts/AuthContext'; // Para saber qué usuario está logueado
+import { useAuth } from '../../hooks/useAuth'; // Para saber qué usuario está logueado
 import { getSleepRecords } from '../../services/sleepService';
 import { getUserProfile } from '../../services/userService';
 import { getDailyRecommendation } from './sleepRecommendations'; // Tu lógica en la misma carpeta
