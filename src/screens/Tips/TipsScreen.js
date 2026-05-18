@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBar, Card } from '../../components';
 import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../hooks/useAuth'; // Para saber qué usuario está logueado
+import { useAuth } from '../../hooks/useAuth' ; // Para saber qué usuario está logueado
 import { getSleepRecords } from '../../services/sleepService';
 import { getUserProfile } from '../../services/userService';
 import { getDailyRecommendation } from './sleepRecommendations'; // Tu lógica en la misma carpeta
@@ -72,7 +72,13 @@ const TipsScreen = ({ navigation }) => {
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                             <Ionicons name="bulb" size={24} color={colors.primary} style={{ marginRight: 8 }} />
                             <Text style={[styles.cardTitle, { color: colors.text }]}>Consejos personalizados</Text>
-                        </View>
+                            </View>
+                            {/* ¡Cambiamos lastRecord.fecha por lastRecord.fecha_sueno! */}
+                            {lastRecord?.fecha_sueno && (
+                                <Text style={{ color: colors.textSecondary, fontSize: 12, marginBottom: 8, fontWeight: '600' }}>
+                                    Basado en tu noche del: {lastRecord.fecha_sueno}
+                                </Text>
+                            )}
                         {/* Aquí ya quitamos el "En desarrollo..." y pintamos tu mensaje dinámico */}
                         <Text style={[styles.cardText, { color: colors.textSecondary, lineHeight: 22 }]}>
                             {recommendationMessage}
