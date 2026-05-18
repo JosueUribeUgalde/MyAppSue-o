@@ -20,7 +20,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getSleepRecords, calculateWeeklyStats } from '../../services/sleepService';
 import { getUserProfile } from '../../services/userService';
-import { getDailyRecommendation } from '../../utils/sleepRecommendations'; // Importación corregida en inglés
+import { getDailyRecommendation } from '../Tips/sleepRecommendations'; // Importación corregida en inglés
 import createStyles from './styles';
 
 const HomeScreen = ({ navigation }) => {
