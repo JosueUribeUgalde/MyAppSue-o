@@ -18,10 +18,11 @@ import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CustomButton, CustomInput } from '../../components';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../contexts/ThemeContext';
 import { validateEmail, validateRequired } from '../../utils/validators';
 import styles from './styles';
 
-const LoginScreen = ({ onContinueWithoutAccount }) => {
+const LoginScreen = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,6 +31,7 @@ const LoginScreen = ({ onContinueWithoutAccount }) => {
   
   // Hook personalizado de autenticación
   const { signIn, signUp, loading } = useAuth();
+  const { colors } = useTheme();
 
   // Validar formulario
   const validateForm = () => {
@@ -51,6 +53,8 @@ const LoginScreen = ({ onContinueWithoutAccount }) => {
     const passwordValidation = validateRequired(password, 'La contraseña');
     if (!passwordValidation.isValid) {
       newErrors.password = passwordValidation.message;
+    } else if (password.length < 6) {
+      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
     }
     
     setErrors(newErrors);
@@ -67,41 +71,38 @@ const LoginScreen = ({ onContinueWithoutAccount }) => {
       return;
     }
 
-    const result = isRegistering
-      ? await signUp(email, password, displayName)
-      : await signIn(email, password);
-    
-    if (result.success) {
-      Alert.alert('¡Éxito!', isRegistering ? 'Cuenta creada correctamente' : 'Bienvenido de vuelta');
-      // La navegación será manejada automáticamente por AppNavigator
-    } else {
-      // Mensajes de error más amigables
-      let errorMessage = isRegistering ? 'No se pudo crear la cuenta' : 'No se pudo iniciar sesión';
+    try {
+      const result = isRegistering
+        ? await signUp(email, password, displayName)
+        : await signIn(email, password);
       
-      if (result.error?.includes('user-not-found')) {
-        errorMessage = 'No existe una cuenta con este correo';
-      } else if (result.error?.includes('wrong-password')) {
-        errorMessage = 'Contraseña incorrecta';
-      } else if (result.error?.includes('invalid-email')) {
-        errorMessage = 'Correo electrónico inválido';
-      } else if (result.error?.includes('invalid-credential')) {
-        errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña';
-      } else if (result.error?.includes('email-already-in-use')) {
-        errorMessage = 'Ya existe una cuenta con este correo';
-      } else if (result.error?.includes('weak-password')) {
-        errorMessage = 'La contraseña debe tener al menos 6 caracteres';
+      if (result.success) {
+        Alert.alert(
+          '¡Éxito!', 
+          isRegistering 
+            ? 'Cuenta creada correctamente. ¡Bienvenido!' 
+            : 'Bienvenido de vuelta'
+        );
+        // La navegación será manejada automáticamente por AppNavigator
+      } else {
+        // Mensaje genérico de error
+        const errorMessage = isRegistering 
+          ? 'No se pudo crear la cuenta. Verifica los datos e intenta nuevamente.'
+          : 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+        
+        Alert.alert('Error de Autenticación', errorMessage);
       }
-      
-      Alert.alert('Error', errorMessage);
+    } catch (error) {
+      Alert.alert('Error', 'Ocurrió un error inesperado. Intenta nuevamente.');
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView style={styles.container}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>{isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: colors.text }]}>{isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           {isRegistering ? 'Registra tu usuario para guardar tus datos' : 'Bienvenido de vuelta'}
         </Text>
       </View>
@@ -136,6 +137,7 @@ const LoginScreen = ({ onContinueWithoutAccount }) => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          showPasswordToggle
           error={errors.password}
         />
 
@@ -153,20 +155,15 @@ const LoginScreen = ({ onContinueWithoutAccount }) => {
           onPress={() => {
             setIsRegistering(!isRegistering);
             setErrors({});
+            // Limpiar campos al cambiar de modo
+            setDisplayName('');
+            setEmail('');
+            setPassword('');
           }}
           variant="outline"
           size="large"
           disabled={loading}
           style={styles.signupButton}
-        />
-
-        <CustomButton
-          title="Entrar sin cuenta"
-          onPress={onContinueWithoutAccount}
-          variant="secondary"
-          size="large"
-          disabled={loading}
-          style={styles.guestButton}
         />
       </View>
     </ScrollView>

@@ -60,7 +60,7 @@ const SleepTrackingScreen = ({ navigation }) => {
   // Cargar registros recientes
   useEffect(() => {
     const cargarRegistrosRecientes = async () => {
-      if (!user || user.isGuest) return;
+      if (!user) return;
       
       const resultado = await getSleepRecords(user.uid);
       if (resultado.success) {
@@ -74,7 +74,7 @@ const SleepTrackingScreen = ({ navigation }) => {
   // Verificar si ya existe un registro para la fecha seleccionada
   useEffect(() => {
     const verificarFecha = async () => {
-      if (!user || user.isGuest) return;
+      if (!user) return;
       
       const fechaFormato = formatDate(selectedDate);
       const resultado = await verificarRegistroDuplicado(user.uid, fechaFormato);
@@ -175,7 +175,7 @@ const SleepTrackingScreen = ({ navigation }) => {
       setLoading(true);
 
       // Validar que haya usuario
-      if (!user || user.isGuest) {
+      if (!user) {
         Alert.alert('Error', 'Necesitas iniciar sesión para guardar registros');
         return;
       }

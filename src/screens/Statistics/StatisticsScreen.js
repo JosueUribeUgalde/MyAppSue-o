@@ -20,7 +20,7 @@ const StatisticsScreen = ({ navigation }) => {
 
     // Cargar datos del usuario
     const loadData = useCallback(async () => {
-        if (!user || user.isGuest) {
+        if (!user) {
             setLoading(false);
             return;
         }

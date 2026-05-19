@@ -29,7 +29,7 @@ const HomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
-    if (!user || user.isGuest) {
+    if (!user) {
       setLoading(false);
       return;
     }
@@ -51,8 +51,6 @@ const HomeScreen = ({ navigation }) => {
 
   const userName = user?.displayName
     ? user.displayName.split(' ')[0]
-    : user?.isGuest
-    ? 'Invitado'
     : '';
 
   return (

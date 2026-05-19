@@ -24,35 +24,18 @@ import TipsScreen from '../screens/Tips/TipsScreen';
  * Maneja la autenticación y navegación entre pantallas
  */
 const AppNavigator = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, initializing } = useAuth();
   const { colors } = useTheme();
   const [currentScreen, setCurrentScreen] = useState('Home');
-  const [guestUser, setGuestUser] = useState(null);
 
   useEffect(() => {
     if (user) {
-      setGuestUser(null);
       setCurrentScreen('Home');
     }
   }, [user]);
 
-  const handleGuestLogin = () => {
-    setGuestUser({
-      uid: 'guest',
-      displayName: 'Invitado',
-      email: 'Modo sin cuenta',
-      isGuest: true,
-    });
-    setCurrentScreen('Home');
-  };
-
-  const handleGuestLogout = () => {
-    setGuestUser(null);
-    setCurrentScreen('Home');
-  };
-
-  // Mostrar loading mientras se verifica la autenticación
-  if (loading) {
+  // Mostrar loading mientras se verifica la autenticación inicial
+  if (initializing) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -64,8 +47,8 @@ const AppNavigator = () => {
   }
 
   // Si no hay usuario autenticado, mostrar Login
-  if (!user && !guestUser) {
-    return <LoginScreen onContinueWithoutAccount={handleGuestLogin} />;
+  if (!user) {
+    return <LoginScreen />;
   }
 
   // Función para cambiar de pantalla
@@ -90,8 +73,7 @@ const AppNavigator = () => {
         return (
           <ProfileScreen
             navigation={{ navigate }}
-            authUser={user || guestUser}
-            onGuestLogout={handleGuestLogout}
+            authUser={user}
           />
         );
       default:
