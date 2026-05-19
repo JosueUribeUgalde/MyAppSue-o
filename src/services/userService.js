@@ -41,8 +41,39 @@ export const createUserProfile = async (userId, userData) => {
     };
 
     await setDoc(doc(db, USERS_COLLECTION, userId), userProfile);
-    return { success: true };
+    return { success: true, data: userProfile };
   } catch (error) {
+    console.error('Error al crear perfil de usuario:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Verificar si existe un perfil de usuario, si no existe lo crea
+ * @param {string} userId - ID del usuario
+ * @param {Object} userData - Datos del usuario de Auth
+ * @returns {Promise<Object>} - Resultado de la operación
+ */
+export const ensureUserProfile = async (userId, userData) => {
+  try {
+    // Primero intentamos obtener el perfil
+    const profileResult = await getUserProfile(userId);
+    
+    // Si existe, retornamos éxito sin log
+    if (profileResult.success) {
+      return { success: true, data: profileResult.data, created: false };
+    }
+    
+    // Si no existe, lo creamos
+    const createResult = await createUserProfile(userId, userData);
+    
+    if (createResult.success) {
+      return { success: true, data: createResult.data, created: true };
+    }
+    
+    return createResult;
+  } catch (error) {
+    console.error('Error en ensureUserProfile:', error);
     return { success: false, error: error.message };
   }
 };

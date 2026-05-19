@@ -24,7 +24,7 @@ const HistoryScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
-    if (!user || user.isGuest) {
+    if (!user) {
       setLoading(false);
       return;
     }

@@ -21,7 +21,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { getSleepRecords, calculateWeeklyStats } from '../../services/sleepService';
 import createStyles from './styles';
 
-const ProfileScreen = ({ navigation, authUser, onGuestLogout }) => {
+const ProfileScreen = ({ navigation, authUser }) => {
   const { user, logout } = useAuth();
   const { isDarkMode, toggleTheme, colors } = useTheme();
   const styles = createStyles(colors);
@@ -33,7 +33,7 @@ const ProfileScreen = ({ navigation, authUser, onGuestLogout }) => {
 
   // Cargar estadísticas del usuario
   const loadStats = useCallback(async () => {
-    if (!currentUser || currentUser.isGuest) {
+    if (!currentUser) {
       setLoadingStats(false);
       return;
     }
@@ -96,11 +96,6 @@ const ProfileScreen = ({ navigation, authUser, onGuestLogout }) => {
           text: 'Sí, cerrar sesión',
           style: 'destructive',
           onPress: async () => {
-            if (currentUser?.isGuest) {
-              onGuestLogout?.();
-              return;
-            }
-
             const result = await logout();
             if (result.success) {
               console.log('Sesión cerrada exitosamente');
@@ -132,7 +127,7 @@ const ProfileScreen = ({ navigation, authUser, onGuestLogout }) => {
           {currentUser?.displayName || 'Usuario'}
         </Text>
         <Text style={[styles.email, { color: colors.textSecondary }]}>
-          {currentUser?.email || currentUser?.isGuest ? 'Modo Invitado' : 'Sin correo'}
+          {currentUser?.email || 'Sin correo'}
         </Text>
       </View>
 

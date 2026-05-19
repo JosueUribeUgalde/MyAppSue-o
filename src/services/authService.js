@@ -30,16 +30,22 @@ import { auth } from '../config/firebase';
  */
 export const signUpWithEmail = async (email, password, displayName) => {
   try {
+    // 1. Crear usuario en Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Actualizar el perfil con el nombre
+    // 2. Actualizar el perfil con el nombre
     if (displayName) {
       await updateProfile(userCredential.user, { displayName });
     }
     
+    // 3. Retornar el usuario para que se pueda crear el perfil en Firestore
     return { success: true, user: userCredential.user };
   } catch (error) {
-    return { success: false, error: error.message };
+    // Retornar el código de error de Firebase
+    return { 
+      success: false, 
+      error: error.code || error.message || 'Error desconocido'
+    };
   }
 };
 
@@ -54,7 +60,11 @@ export const signInWithEmail = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return { success: true, user: userCredential.user };
   } catch (error) {
-    return { success: false, error: error.message };
+    // Retornar el código de error de Firebase
+    return { 
+      success: false, 
+      error: error.code || error.message || 'Error desconocido'
+    };
   }
 };
 

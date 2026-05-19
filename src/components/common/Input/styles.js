@@ -15,45 +15,49 @@ const styles = StyleSheet.create({
   
   label: {
     fontSize: SIZES.font.medium,
-    color: COLORS.text,
     fontWeight: '600',
     marginBottom: SIZES.padding.xs,
+    // Color se aplica dinámicamente desde el componente
   },
   
-  inputContainer: {
+  inputWrapper: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: SIZES.borderRadius.md,
-    borderWidth: SIZES.borderWidth.thin,
-    borderColor: COLORS.border,
-    height: SIZES.input.height,
-    paddingHorizontal: SIZES.padding.md,
-  },
-  
-  inputContainer_error: {
-    borderColor: COLORS.error,
-  },
-  
-  iconContainer: {
-    marginRight: SIZES.padding.sm,
   },
   
   input: {
     flex: 1,
     fontSize: SIZES.font.regular,
-    color: COLORS.text,
+    borderRadius: SIZES.borderRadius.md,
+    borderWidth: SIZES.borderWidth.thin,
+    height: SIZES.input.height,
+    paddingHorizontal: SIZES.padding.md,
+    // Color, backgroundColor y borderColor se aplican dinámicamente desde el componente
   },
   
-  input_withIcon: {
-    marginLeft: SIZES.padding.xs,
+  inputWithIcon: {
+    paddingRight: SIZES.padding.xxxl + SIZES.padding.md, // Espacio para el icono
+  },
+  
+  eyeIcon: {
+    position: 'absolute',
+    right: SIZES.padding.md,
+    height: SIZES.input.height,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.padding.sm,
+  },
+  
+  inputError: {
+    // borderColor se aplica dinámicamente desde el componente
   },
   
   errorText: {
     fontSize: SIZES.font.small,
-    color: COLORS.error,
     marginTop: SIZES.padding.xs,
     marginLeft: SIZES.padding.xs,
+    // Color se aplica dinámicamente desde el componente
   },
 });
 

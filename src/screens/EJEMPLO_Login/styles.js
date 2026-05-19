@@ -11,12 +11,12 @@ import { COLORS, SIZES } from '../../constants';
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    // backgroundColor se aplica dinámicamente desde el componente
   },
 
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    // backgroundColor se aplica dinámicamente desde el componente
   },
   
   header: {
@@ -28,13 +28,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.font.xxxLarge,
     fontWeight: 'bold',
-    color: COLORS.text,
     marginBottom: SIZES.padding.xs,
+    // color se aplica dinámicamente desde el componente
   },
   
   subtitle: {
     fontSize: SIZES.font.large,
-    color: COLORS.textSecondary,
+    // color se aplica dinámicamente desde el componente
   },
   
   formContainer: {
@@ -46,10 +46,6 @@ const styles = StyleSheet.create({
   },
   
   signupButton: {
-    marginTop: SIZES.padding.md,
-  },
-
-  guestButton: {
     marginTop: SIZES.padding.md,
     marginBottom: SIZES.padding.xl,
   },
