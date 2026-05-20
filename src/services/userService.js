@@ -15,7 +15,6 @@ import {
   doc, 
   setDoc, 
   getDoc, 
-  updateDoc, 
   deleteDoc,
   Timestamp 
 } from 'firebase/firestore';
@@ -107,10 +106,10 @@ export const getUserProfile = async (userId) => {
 export const updateUserProfile = async (userId, updates) => {
   try {
     const userRef = doc(db, USERS_COLLECTION, userId);
-    await updateDoc(userRef, {
+    await setDoc(userRef, {
       ...updates,
       updatedAt: Timestamp.now(),
-    });
+    }, { merge: true });
     return { success: true };
   } catch (error) {
     return { success: false, error: error.message };

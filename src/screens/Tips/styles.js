@@ -22,20 +22,20 @@ const createStyles = (colors) => StyleSheet.create({
   },
   
   title: {
-    fontSize: SIZES.font.xxxLarge,
-    fontWeight: 'bold',
+    fontSize: SIZES.font.heading,
+    fontWeight: '800',
     color: colors.text,
     marginBottom: SIZES.padding.xs,
   },
   
   subtitle: {
-    fontSize: SIZES.font.large,
+    fontSize: SIZES.font.regular,
     color: colors.textSecondary,
   },
   
   cardTitle: {
     fontSize: SIZES.font.large,
-    fontWeight: '600',
+    fontWeight: '800',
     color: colors.text,
     marginBottom: SIZES.padding.md,
   },
