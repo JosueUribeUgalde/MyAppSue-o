@@ -46,7 +46,7 @@ const CustomInput = ({
             showPasswordToggle && styles.inputWithIcon,
             { 
               color: colors.text,
-              backgroundColor: colors.surface,
+              backgroundColor: colors.surfaceElevated || colors.surface,
               borderColor: error ? colors.error : colors.border,
             }
           ]}

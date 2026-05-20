@@ -5,6 +5,41 @@
  * Valida emails, contraseñas, campos requeridos, etc.
  */
 
+export const PASSWORD_POLICY = {
+  minLength: 8,
+  maxLength: 64,
+  specialCharacterRegex: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/,
+};
+
+export const getPasswordRequirements = (password = '') => [
+  {
+    id: 'length',
+    label: `${PASSWORD_POLICY.minLength}-${PASSWORD_POLICY.maxLength} caracteres`,
+    isMet: password.length >= PASSWORD_POLICY.minLength
+      && password.length <= PASSWORD_POLICY.maxLength,
+  },
+  {
+    id: 'uppercase',
+    label: 'Una mayúscula',
+    isMet: /[A-Z]/.test(password),
+  },
+  {
+    id: 'lowercase',
+    label: 'Una minúscula',
+    isMet: /[a-z]/.test(password),
+  },
+  {
+    id: 'number',
+    label: 'Un número',
+    isMet: /\d/.test(password),
+  },
+  {
+    id: 'special',
+    label: 'Un carácter especial',
+    isMet: PASSWORD_POLICY.specialCharacterRegex.test(password),
+  },
+];
+
 /**
  * Validar formato de email
  * @param {string} email - Email a validar
@@ -27,20 +62,48 @@ export const validatePassword = (password) => {
     return { isValid: false, message: 'La contraseña es requerida' };
   }
   
-  if (password.length < 6) {
-    return { 
-      isValid: false, 
-      message: 'La contraseña debe tener al menos 6 caracteres' 
+  if (password.length < PASSWORD_POLICY.minLength) {
+    return {
+      isValid: false,
+      message: `La contraseña debe tener al menos ${PASSWORD_POLICY.minLength} caracteres`
     };
   }
   
-  if (password.length < 8) {
-    return { 
-      isValid: true, 
-      message: 'Contraseña débil, considera usar 8+ caracteres' 
+  if (password.length > PASSWORD_POLICY.maxLength) {
+    return {
+      isValid: false,
+      message: `La contraseña no debe pasar de ${PASSWORD_POLICY.maxLength} caracteres`
     };
   }
-  
+
+  if (!/[A-Z]/.test(password)) {
+    return {
+      isValid: false,
+      message: 'La contraseña debe incluir al menos una mayúscula'
+    };
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return {
+      isValid: false,
+      message: 'La contraseña debe incluir al menos una minúscula'
+    };
+  }
+
+  if (!/\d/.test(password)) {
+    return {
+      isValid: false,
+      message: 'La contraseña debe incluir al menos un número'
+    };
+  }
+
+  if (!PASSWORD_POLICY.specialCharacterRegex.test(password)) {
+    return {
+      isValid: false,
+      message: 'La contraseña debe incluir al menos un carácter especial'
+    };
+  }
+
   return { isValid: true, message: 'Contraseña válida' };
 };
 

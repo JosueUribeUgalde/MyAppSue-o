@@ -26,7 +26,6 @@ const EditProfileScreen = ({ navigation, authUser }) => {
     displayName: '',
     email: '',
     sleepGoal: '8',
-    photoURL: '',
   });
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -35,7 +34,6 @@ const EditProfileScreen = ({ navigation, authUser }) => {
     displayName: data.displayName || currentUser?.displayName || '',
     email: data.email || currentUser?.email || '',
     sleepGoal: String(data.sleepGoal || 8),
-    photoURL: data.photoURL || currentUser?.photoURL || '',
   }), [currentUser]);
 
   const loadProfile = useCallback(async () => {
@@ -75,7 +73,6 @@ const EditProfileScreen = ({ navigation, authUser }) => {
     }
 
     const displayName = profileForm.displayName.trim();
-    const photoURL = profileForm.photoURL.trim();
     const sleepGoal = Number(profileForm.sleepGoal);
 
     if (!displayName) {
@@ -93,7 +90,6 @@ const EditProfileScreen = ({ navigation, authUser }) => {
       displayName,
       email: profileForm.email || currentUser.email || '',
       sleepGoal,
-      photoURL,
     };
     const result = await updateUserProfile(currentUser.uid, updates);
     setSavingProfile(false);
@@ -154,13 +150,6 @@ const EditProfileScreen = ({ navigation, authUser }) => {
                 value={profileForm.sleepGoal}
                 onChangeText={(value) => handleProfileFieldChange('sleepGoal', value)}
                 keyboardType="numeric"
-              />
-              <CustomInput
-                label="Foto de perfil (URL)"
-                placeholder="https://..."
-                value={profileForm.photoURL}
-                onChangeText={(value) => handleProfileFieldChange('photoURL', value)}
-                autoCapitalize="none"
               />
               <View style={styles.editActions}>
                 <CustomButton

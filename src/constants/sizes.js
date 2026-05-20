@@ -85,7 +85,7 @@ export const SIZES = {
   
   // Tamaños de inputs
   input: {
-    height: 48,
-    borderRadius: 8,
+    height: 54,
+    borderRadius: 14,
   },
 };

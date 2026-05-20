@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Dimensions, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BarChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,18 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getSleepRecords } from '../../services/sleepService';
 import createStyles from './styles';
+
+const withOpacity = (hexColor, opacity = 1) => {
+    if (!hexColor || !hexColor.startsWith('#') || hexColor.length !== 7) {
+        return hexColor;
+    }
+
+    const red = parseInt(hexColor.slice(1, 3), 16);
+    const green = parseInt(hexColor.slice(3, 5), 16);
+    const blue = parseInt(hexColor.slice(5, 7), 16);
+
+    return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+};
 
 const StatisticsScreen = ({ navigation }) => {
     const { user } = useAuth();
@@ -115,15 +127,20 @@ const StatisticsScreen = ({ navigation }) => {
     const screenWidth = Dimensions.get("window").width;
 
     const chartConfig = {
-        backgroundColor: colors.textLight,
-        backgroundGradientFrom: colors.textLight,
-        backgroundGradientTo: colors.textLight,
+        backgroundColor: colors.surface,
+        backgroundGradientFrom: colors.surface,
+        backgroundGradientTo: colors.surface,
         decimalPlaces: 1,
-        color: (opacity = 1) => `rgba(150, 154, 180, ${opacity})`,
-        labelColor: (opacity = 1) => colors.textSecondary,
+        color: (opacity = 1) => withOpacity(colors.primary, opacity),
+        labelColor: () => colors.textSecondary,
         barPercentage: 0.6,
+        fillShadowGradient: colors.primary,
+        fillShadowGradientOpacity: 0.95,
         propsForLabels: {
             fontSize: SIZES.font.small
+        },
+        propsForBackgroundLines: {
+            stroke: colors.border,
         },
         style: {
             borderRadius: SIZES.borderRadius.lg
@@ -132,7 +149,8 @@ const StatisticsScreen = ({ navigation }) => {
 
     const chartConfigQuality = {
         ...chartConfig,
-        color: (opacity = 1) => `rgba(236, 140, 140, ${opacity})`, // Color coral
+        color: (opacity = 1) => withOpacity(colors.accent, opacity),
+        fillShadowGradient: colors.accent,
     };
 
     if (loading) {
@@ -165,6 +183,21 @@ const StatisticsScreen = ({ navigation }) => {
                             Registra al menos un día de sueño{'\n'}para ver tus estadísticas
                         </Text>
                     </View>
+
+                    <TouchableOpacity
+                        style={styles.historyShortcut}
+                        onPress={() => navigation.navigate('History')}
+                        activeOpacity={0.75}
+                    >
+                        <View style={styles.historyShortcutIcon}>
+                            <Ionicons name="time-outline" size={22} color={colors.primary} />
+                        </View>
+                        <View style={styles.historyShortcutContent}>
+                            <Text style={styles.historyShortcutTitle}>Ver historial</Text>
+                            <Text style={styles.historyShortcutText}>Consulta todos tus registros guardados</Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                    </TouchableOpacity>
                 </ScrollView>
                 <BottomTabBar navigation={navigation} currentScreen="Statistics" />
             </SafeAreaView>
@@ -263,6 +296,21 @@ const StatisticsScreen = ({ navigation }) => {
                         showValuesOnTopOfBars={true}
                     />
                 </Card>
+
+                <TouchableOpacity
+                    style={styles.historyShortcut}
+                    onPress={() => navigation.navigate('History')}
+                    activeOpacity={0.75}
+                >
+                    <View style={styles.historyShortcutIcon}>
+                        <Ionicons name="time-outline" size={22} color={colors.primary} />
+                    </View>
+                    <View style={styles.historyShortcutContent}>
+                        <Text style={styles.historyShortcutTitle}>Ver historial</Text>
+                        <Text style={styles.historyShortcutText}>Consulta todos tus registros guardados</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                </TouchableOpacity>
             </ScrollView>
 
             <BottomTabBar navigation={navigation} currentScreen="Statistics" />

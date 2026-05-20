@@ -39,12 +39,6 @@ const BottomTabBar = ({ navigation, currentScreen = 'Home' }) => {
       iconActive: 'bar-chart',
     },
     {
-      name: 'History',
-      label: 'Historial',
-      icon: 'time-outline',
-      iconActive: 'time',
-    },
-    {
       name: 'Tips',
       label: 'Tips',
       icon: 'bulb-outline',
@@ -65,18 +59,22 @@ const BottomTabBar = ({ navigation, currentScreen = 'Home' }) => {
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: colors.surface }} edges={['bottom']}>
+    <SafeAreaView style={{ backgroundColor: colors.background }} edges={['bottom']}>
       <View style={{
         flexDirection: 'row',
         backgroundColor: colors.surface,
-        borderTopWidth: 1,
-        borderTopColor: colors.border,
-        paddingVertical: SIZES.padding.xs,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 5,
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: SIZES.borderRadius.xl,
+        marginHorizontal: SIZES.padding.lg,
+        marginBottom: SIZES.padding.sm,
+        paddingVertical: SIZES.padding.sm,
+        paddingHorizontal: SIZES.padding.xs,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: -8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+        elevation: 8,
       }}>
         {tabs.map((tab) => {
         const isActive = currentScreen === tab.name;
@@ -91,18 +89,30 @@ const BottomTabBar = ({ navigation, currentScreen = 'Home' }) => {
             onPress={() => handleTabPress(tab.name)}
             activeOpacity={0.7}
           >
-            <Ionicons
-              name={isActive ? tab.iconActive : tab.icon}
-              size={24}
-              color={isActive ? colors.primary : colors.textSecondary}
-            />
+            <View
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 17,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: isActive ? colors.primary : 'transparent',
+              }}
+            >
+              <Ionicons
+                name={isActive ? tab.iconActive : tab.icon}
+                size={19}
+                color={isActive ? colors.textLight : colors.textSecondary}
+              />
+            </View>
             <Text
               style={{
                 fontSize: SIZES.font.xSmall,
-                marginTop: 4,
+                marginTop: 3,
                 color: isActive ? colors.primary : colors.textSecondary,
-                fontWeight: isActive ? '600' : 'normal',
+                fontWeight: isActive ? '800' : '600',
               }}
+              numberOfLines={1}
             >
               {tab.label}
             </Text>

@@ -14,9 +14,9 @@ const styles = StyleSheet.create({
   },
   
   label: {
-    fontSize: SIZES.font.medium,
-    fontWeight: '600',
-    marginBottom: SIZES.padding.xs,
+    fontSize: SIZES.font.small,
+    fontWeight: '700',
+    marginBottom: SIZES.padding.sm,
     // Color se aplica dinámicamente desde el componente
   },
   
@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: SIZES.font.regular,
-    borderRadius: SIZES.borderRadius.md,
+    borderRadius: SIZES.input.borderRadius,
     borderWidth: SIZES.borderWidth.thin,
     height: SIZES.input.height,
-    paddingHorizontal: SIZES.padding.md,
+    paddingHorizontal: SIZES.padding.lg,
     // Color, backgroundColor y borderColor se aplican dinámicamente desde el componente
   },
   
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   
   eyeIcon: {
     position: 'absolute',
-    right: SIZES.padding.md,
+    right: SIZES.padding.sm,
     height: SIZES.input.height,
     justifyContent: 'center',
     alignItems: 'center',

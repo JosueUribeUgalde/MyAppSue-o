@@ -22,14 +22,14 @@ const createStyles = (colors) => StyleSheet.create({
   },
   
   title: {
-    fontSize: SIZES.font.xxxLarge,
-    fontWeight: 'bold',
+    fontSize: SIZES.font.heading,
+    fontWeight: '800',
     color: colors.text,
     marginBottom: SIZES.padding.xs,
   },
   
   subtitle: {
-    fontSize: SIZES.font.large,
+    fontSize: SIZES.font.regular,
     color: colors.textSecondary,
   },
   
@@ -58,7 +58,7 @@ const createStyles = (colors) => StyleSheet.create({
 
   recordDate: {
     fontSize: SIZES.font.large,
-    fontWeight: '600',
+    fontWeight: '800',
     color: colors.text,
   },
 
@@ -102,7 +102,7 @@ const createStyles = (colors) => StyleSheet.create({
     backgroundColor: colors.primaryLight,
     paddingHorizontal: SIZES.padding.md,
     paddingVertical: SIZES.padding.sm,
-    borderRadius: SIZES.borderRadius.md,
+    borderRadius: SIZES.borderRadius.full,
   },
 
   recordQualityEmoji: {
@@ -167,7 +167,7 @@ const createStyles = (colors) => StyleSheet.create({
 
   monthDivider: {
     fontSize: SIZES.font.regular,
-    fontWeight: '600',
+    fontWeight: '800',
     color: colors.primary,
     marginTop: SIZES.padding.lg,
     marginBottom: SIZES.padding.md,
@@ -176,9 +176,17 @@ const createStyles = (colors) => StyleSheet.create({
   },
 
   recordsCount: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SIZES.padding.xs,
+    marginBottom: SIZES.padding.md,
+  },
+
+  recordsCountText: {
     fontSize: SIZES.font.small,
     color: colors.textSecondary,
-    marginBottom: SIZES.padding.md,
+    fontWeight: '700',
     textAlign: 'center',
   },
 });
