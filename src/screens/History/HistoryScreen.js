@@ -111,7 +111,7 @@ const HistoryScreen = ({ navigation }) => {
             Cargando historial...
           </Text>
         </View>
-        <BottomTabBar navigation={navigation} currentScreen="History" />
+        <BottomTabBar navigation={navigation} currentScreen="Statistics" />
       </SafeAreaView>
     );
   }
@@ -134,7 +134,7 @@ const HistoryScreen = ({ navigation }) => {
             </Text>
           </View>
         </ScrollView>
-        <BottomTabBar navigation={navigation} currentScreen="History" />
+        <BottomTabBar navigation={navigation} currentScreen="Statistics" />
       </SafeAreaView>
     );
   }
@@ -147,9 +147,12 @@ const HistoryScreen = ({ navigation }) => {
           <Text style={styles.subtitle}>Todos tus registros de sueño</Text>
         </View>
 
-        <Text style={styles.recordsCount}>
-          📊 {records.length} registro{records.length !== 1 ? 's' : ''} guardado{records.length !== 1 ? 's' : ''}
-        </Text>
+        <View style={styles.recordsCount}>
+          <Ionicons name="bar-chart-outline" size={16} color={colors.primary} />
+          <Text style={styles.recordsCountText}>
+            {records.length} registro{records.length !== 1 ? 's' : ''} guardado{records.length !== 1 ? 's' : ''}
+          </Text>
+        </View>
 
         {Object.entries(groupedRecords).map(([monthYear, monthRecords]) => (
           <View key={monthYear}>
@@ -211,7 +214,7 @@ const HistoryScreen = ({ navigation }) => {
         <View style={{ height: SIZES.padding.xxl }} />
       </ScrollView>
       
-      <BottomTabBar navigation={navigation} currentScreen="History" />
+      <BottomTabBar navigation={navigation} currentScreen="Statistics" />
     </SafeAreaView>
   );
 };

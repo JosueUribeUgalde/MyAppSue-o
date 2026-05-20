@@ -20,6 +20,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { validatePassword } from '../utils/validators';
 
 /**
  * Registrar un nuevo usuario con email y contraseña
@@ -30,6 +31,14 @@ import { auth } from '../config/firebase';
  */
 export const signUpWithEmail = async (email, password, displayName) => {
   try {
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      return {
+        success: false,
+        error: passwordValidation.message,
+      };
+    }
+
     // 1. Crear usuario en Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     

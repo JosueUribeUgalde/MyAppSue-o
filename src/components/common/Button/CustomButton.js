@@ -35,20 +35,26 @@ const CustomButton = ({
     button: {
       paddingHorizontal: SIZES.padding.lg,
       paddingVertical: SIZES.padding.md,
-      borderRadius: SIZES.borderRadius.md,
+      borderRadius: SIZES.borderRadius.lg,
       alignItems: 'center',
       justifyContent: 'center',
+      minHeight: 50,
     },
     button_primary: {
       backgroundColor: colors.primary,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.14,
+      shadowRadius: 14,
+      elevation: 4,
     },
     button_secondary: {
       backgroundColor: colors.secondary,
     },
     button_outline: {
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      borderColor: colors.primary,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.borderStrong || colors.border,
     },
     button_small: {
       paddingHorizontal: SIZES.padding.md,
@@ -67,7 +73,7 @@ const CustomButton = ({
     },
     buttonText: {
       fontSize: SIZES.font.regular,
-      fontWeight: '600',
+      fontWeight: '700',
     },
     buttonText_primary: {
       color: colors.textLight,

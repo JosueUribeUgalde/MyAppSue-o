@@ -19,8 +19,8 @@ const createStyles = (colors) => StyleSheet.create({
   },
   
   title: {
-    fontSize: SIZES.font.xxxLarge,
-    fontWeight: 'bold',
+    fontSize: SIZES.font.heading,
+    fontWeight: '800',
     color: colors.text,
     marginBottom: SIZES.padding.lg,
     marginTop: SIZES.padding.md,
@@ -53,8 +53,8 @@ const createStyles = (colors) => StyleSheet.create({
   },
   
   timeValue: {
-    fontSize: SIZES.font.xxxLarge * 1.2,
-    fontWeight: '300',
+    fontSize: 40,
+    fontWeight: '800',
     color: colors.primary,
   },
   
@@ -66,8 +66,8 @@ const createStyles = (colors) => StyleSheet.create({
   timeButton: {
     width: SIZES.button.medium.height,
     height: SIZES.button.medium.height,
-    borderRadius: SIZES.borderRadius.md,
-    backgroundColor: colors.background,
+    borderRadius: SIZES.borderRadius.lg,
+    backgroundColor: colors.surfaceElevated || colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: SIZES.borderWidth.thin,
@@ -75,8 +75,8 @@ const createStyles = (colors) => StyleSheet.create({
   },
   
   totalCard: {
-    backgroundColor: colors.primaryLight,
-    opacity: 0.3,
+    backgroundColor: colors.secondaryLight,
+    borderColor: colors.secondary,
   },
   
   totalLabel: {
@@ -129,7 +129,7 @@ const createStyles = (colors) => StyleSheet.create({
   
   sectionTitle: {
     fontSize: SIZES.font.xLarge,
-    fontWeight: '600',
+    fontWeight: '800',
     color: colors.text,
     marginTop: SIZES.padding.xl,
     marginBottom: SIZES.padding.md,
@@ -213,7 +213,7 @@ const createStyles = (colors) => StyleSheet.create({
     backgroundColor: colors.primary,
     paddingVertical: SIZES.padding.md,
     paddingHorizontal: SIZES.padding.lg,
-    borderRadius: SIZES.borderRadius.md,
+    borderRadius: SIZES.borderRadius.lg,
     gap: SIZES.padding.xs,
   },
 
@@ -224,9 +224,9 @@ const createStyles = (colors) => StyleSheet.create({
   },
 
   warningCard: {
-    backgroundColor: '#FFF3CD',
+    backgroundColor: colors.warning + '20',
     borderLeftWidth: 4,
-    borderLeftColor: '#FFC107',
+    borderLeftColor: colors.warning,
     padding: SIZES.padding.md,
     marginBottom: SIZES.padding.md,
     borderRadius: SIZES.borderRadius.md,
@@ -234,7 +234,7 @@ const createStyles = (colors) => StyleSheet.create({
 
   warningText: {
     fontSize: SIZES.font.small,
-    color: '#856404',
+    color: colors.text,
     lineHeight: 20,
   },
 });

@@ -25,7 +25,14 @@ import createStyles from './styles';
 
 const ProfileScreen = ({ navigation, authUser }) => {
   const { user, logout } = useAuth();
-  const { isDarkMode, toggleTheme, colors } = useTheme();
+  const {
+    isDarkMode,
+    toggleTheme,
+    colors,
+    interfaceColorId,
+    interfaceColorOptions,
+    changeInterfaceColor,
+  } = useTheme();
   const styles = createStyles(colors);
   const currentUser = authUser || user;
 
@@ -137,11 +144,12 @@ const ProfileScreen = ({ navigation, authUser }) => {
   };
 
   const getPhotoStatus = () => {
-    const selectedAvatarId = profileData?.avatarId || profileData?.photoURL;
+    const selectedAvatarId = profileData?.avatarId || profileData?.photoURL || DEFAULT_AVATAR_ID;
+    const selectedAnimal = AVATAR_OPTIONS.find((avatar) => avatar.id === selectedAvatarId);
     const photoURL = profileData?.photoURL || currentUser?.photoURL;
 
-    if (selectedAvatarId && AVATAR_OPTIONS.some((avatar) => avatar.id === selectedAvatarId)) {
-      return 'Avatar elegido';
+    if (selectedAnimal) {
+      return selectedAnimal.label;
     }
 
     return photoURL ? 'Configurada' : 'Sin foto';
@@ -149,6 +157,9 @@ const ProfileScreen = ({ navigation, authUser }) => {
 
   const selectedAvatarId = profileData?.avatarId || profileData?.photoURL || DEFAULT_AVATAR_ID;
   const selectedAvatarSource = getAvatarSource(selectedAvatarId, profileData?.photoURL || currentUser?.photoURL);
+  const selectedInterfaceColor = interfaceColorOptions.find(
+    (option) => option.id === interfaceColorId
+  ) || interfaceColorOptions[0];
 
   const handleSelectAvatar = async (avatarId) => {
     if (!currentUser || savingAvatarId) {
@@ -181,12 +192,22 @@ const ProfileScreen = ({ navigation, authUser }) => {
     <SafeAreaView style={[styles.wrapper, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-          {selectedAvatarSource ? (
-            <Image source={selectedAvatarSource} style={styles.avatarImage} resizeMode="cover" />
-          ) : (
-            <Text style={styles.avatarText}>{getInitials()}</Text>
-          )}
+        <Text style={[styles.profileTitle, { color: colors.text }]}>Perfil</Text>
+        <View style={styles.avatarWrap}>
+          <View style={[styles.avatar, { backgroundColor: colors.primaryLight }]}>
+            {selectedAvatarSource ? (
+              <Image source={selectedAvatarSource} style={styles.avatarImage} resizeMode="cover" />
+            ) : (
+              <Text style={styles.avatarText}>{getInitials()}</Text>
+            )}
+          </View>
+          <TouchableOpacity
+            style={styles.avatarCameraButton}
+            onPress={() => setIsAvatarModalVisible(true)}
+            activeOpacity={0.75}
+          >
+            <Ionicons name="camera-outline" size={14} color={colors.textLight} />
+          </TouchableOpacity>
         </View>
         <Text style={[styles.name, { color: colors.text }]}>
           {profileData?.displayName || currentUser?.displayName || 'Usuario'}
@@ -196,60 +217,34 @@ const ProfileScreen = ({ navigation, authUser }) => {
         </Text>
       </View>
 
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Estadísticas</Text>
-      
-      <Card>
+      <View style={styles.profileStatsGrid}>
         {loadingStats ? (
-          <View style={styles.loadingStats}>
+          <View style={[styles.profileStatCard, styles.profileStatCardWide]}>
             <ActivityIndicator size="small" color={colors.primary} />
           </View>
-        ) : stats && totalRecords > 0 ? (
+        ) : (
           <>
-            <View style={styles.statRow}>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Promedio de sueño
+            <View style={styles.profileStatCard}>
+              <Ionicons name="ribbon-outline" size={20} color={colors.primary} />
+              <Text style={[styles.profileStatValue, { color: colors.text }]}>
+                {stats?.bestStreak || 0}
               </Text>
-              <Text style={[styles.statValue, { color: colors.primary }]}>
-                {stats.avgDuration}h
-              </Text>
-            </View>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <View style={styles.statRow}>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Mejor racha
-              </Text>
-              <Text style={[styles.statValue, { color: colors.primary }]}>
-                {stats.bestStreak} día{stats.bestStreak !== 1 ? 's' : ''}
+              <Text style={[styles.profileStatLabel, { color: colors.textSecondary }]}>
+                Racha (días)
               </Text>
             </View>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <View style={styles.statRow}>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Calidad promedio
-              </Text>
-              <Text style={[styles.statValue, { color: colors.primary }]}>
-                {stats.avgQuality}/5
-              </Text>
-            </View>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <View style={styles.statRow}>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Total de registros
-              </Text>
-              <Text style={[styles.statValue, { color: colors.primary }]}>
+            <View style={styles.profileStatCard}>
+              <Ionicons name="time-outline" size={20} color={colors.primary} />
+              <Text style={[styles.profileStatValue, { color: colors.text }]}>
                 {totalRecords}
+              </Text>
+              <Text style={[styles.profileStatLabel, { color: colors.textSecondary }]}>
+                Registros
               </Text>
             </View>
           </>
-        ) : (
-          <View style={styles.emptyStats}>
-            <Ionicons name="analytics-outline" size={32} color={colors.textSecondary} />
-            <Text style={[styles.emptyStatsText, { color: colors.textSecondary }]}>
-              Sin datos aún.{'\n'}Registra tu primer sueño.
-            </Text>
-          </View>
         )}
-      </Card>
+      </View>
 
       <Text style={[styles.sectionTitle, { color: colors.text }]}>Editar perfil</Text>
 
@@ -295,7 +290,7 @@ const ProfileScreen = ({ navigation, authUser }) => {
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
             <View style={styles.statRow}>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Foto de perfil
+                Avatar
               </Text>
               <Text style={[styles.statValue, { color: colors.primary }]}>
                 {getPhotoStatus()}
@@ -374,6 +369,66 @@ const ProfileScreen = ({ navigation, authUser }) => {
             trackColor={{ false: colors.border, true: colors.primaryLight }}
             thumbColor={isDarkMode ? colors.primary : colors.textLight}
           />
+        </View>
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
+        <View style={styles.optionBlock}>
+          <View style={styles.optionLeft}>
+            <Ionicons
+              name="color-palette-outline"
+              size={24}
+              color={colors.primary}
+              style={styles.optionIcon}
+            />
+            <View style={styles.optionContent}>
+              <Text style={[styles.optionText, { color: colors.text }]}>
+                Color de interfaz
+              </Text>
+              <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>
+                {selectedInterfaceColor.label}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.colorPickerRow}>
+            {interfaceColorOptions.map((option) => {
+              const optionColors = isDarkMode ? option.dark : option.light;
+              const isSelected = option.id === interfaceColorId;
+
+              return (
+                <TouchableOpacity
+                  key={option.id}
+                  style={[
+                    styles.colorOption,
+                    {
+                      borderColor: isSelected ? colors.primary : colors.border,
+                      backgroundColor: colors.surfaceElevated || colors.surface,
+                    },
+                  ]}
+                  onPress={() => changeInterfaceColor(option.id)}
+                  activeOpacity={0.75}
+                >
+                  <View
+                    style={[
+                      styles.colorSwatch,
+                      { backgroundColor: optionColors.primary },
+                    ]}
+                  >
+                    {isSelected ? (
+                      <Ionicons name="checkmark" size={16} color={colors.textLight} />
+                    ) : null}
+                  </View>
+                  <Text
+                    style={[
+                      styles.colorOptionLabel,
+                      { color: isSelected ? colors.primary : colors.textSecondary },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       </Card>
 

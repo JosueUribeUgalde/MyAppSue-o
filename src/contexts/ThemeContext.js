@@ -5,16 +5,23 @@
  * Persiste la preferencia del usuario usando AsyncStorage.
  */
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS, DARK_COLORS } from '../constants/colors';
+import {
+  COLORS,
+  DARK_COLORS,
+  DEFAULT_INTERFACE_COLOR_ID,
+  INTERFACE_COLOR_OPTIONS,
+} from '../constants/colors';
 
 const ThemeContext = createContext();
 
 const THEME_STORAGE_KEY = '@app_theme';
+const INTERFACE_COLOR_STORAGE_KEY = '@app_interface_color';
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [interfaceColorId, setInterfaceColorId] = useState(DEFAULT_INTERFACE_COLOR_ID);
   const [isLoading, setIsLoading] = useState(true);
 
   // Cargar tema guardado al iniciar
@@ -27,6 +34,11 @@ export const ThemeProvider = ({ children }) => {
       const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
       if (savedTheme !== null) {
         setIsDarkMode(savedTheme === 'dark');
+      }
+
+      const savedInterfaceColor = await AsyncStorage.getItem(INTERFACE_COLOR_STORAGE_KEY);
+      if (INTERFACE_COLOR_OPTIONS.some((option) => option.id === savedInterfaceColor)) {
+        setInterfaceColorId(savedInterfaceColor);
       }
     } catch (error) {
       console.log('Theme persistence not available, using default theme');
@@ -49,10 +61,40 @@ export const ThemeProvider = ({ children }) => {
     }
   };
 
+  const changeInterfaceColor = async (colorId) => {
+    if (!INTERFACE_COLOR_OPTIONS.some((option) => option.id === colorId)) {
+      return;
+    }
+
+    try {
+      setInterfaceColorId(colorId);
+      await AsyncStorage.setItem(INTERFACE_COLOR_STORAGE_KEY, colorId);
+    } catch (error) {
+      console.log('Interface color will not persist between sessions');
+      setInterfaceColorId(colorId);
+    }
+  };
+
+  const colors = useMemo(() => {
+    const baseColors = isDarkMode ? DARK_COLORS : COLORS;
+    const selectedColor = INTERFACE_COLOR_OPTIONS.find(
+      (option) => option.id === interfaceColorId
+    ) || INTERFACE_COLOR_OPTIONS[0];
+    const modeColors = isDarkMode ? selectedColor.dark : selectedColor.light;
+
+    return {
+      ...baseColors,
+      ...modeColors,
+    };
+  }, [interfaceColorId, isDarkMode]);
+
   const theme = {
     isDarkMode,
-    colors: isDarkMode ? DARK_COLORS : COLORS,
+    colors,
+    interfaceColorId,
+    interfaceColorOptions: INTERFACE_COLOR_OPTIONS,
     toggleTheme,
+    changeInterfaceColor,
     isLoading,
   };
 

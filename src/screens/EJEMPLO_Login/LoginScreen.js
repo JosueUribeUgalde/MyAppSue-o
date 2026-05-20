@@ -14,13 +14,20 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
+import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { CustomButton, CustomInput } from '../../components';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
 import { resetPassword } from '../../services/authService';
-import { validateEmail, validateRequired } from '../../utils/validators';
+import {
+  PASSWORD_POLICY,
+  getPasswordRequirements,
+  validateEmail,
+  validatePassword,
+  validateRequired,
+} from '../../utils/validators';
 import styles from './styles';
 
 const LoginScreen = () => {
@@ -32,11 +39,13 @@ const LoginScreen = () => {
   const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
   const [recoveryMessage, setRecoveryMessage] = useState('');
   const [recoveryError, setRecoveryError] = useState('');
+  const [authError, setAuthError] = useState('');
   const [sendingRecoveryEmail, setSendingRecoveryEmail] = useState(false);
   
   // Hook personalizado de autenticación
   const { signIn, signUp, loading } = useAuth();
   const { colors } = useTheme();
+  const passwordRequirements = getPasswordRequirements(password);
 
   // Validar formulario
   const validateForm = () => {
@@ -58,8 +67,11 @@ const LoginScreen = () => {
     const passwordValidation = validateRequired(password, 'La contraseña');
     if (!passwordValidation.isValid) {
       newErrors.password = passwordValidation.message;
-    } else if (password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+    } else if (isRegistering) {
+      const strongPasswordValidation = validatePassword(password);
+      if (!strongPasswordValidation.isValid) {
+        newErrors.password = strongPasswordValidation.message;
+      }
     }
     
     setErrors(newErrors);
@@ -68,6 +80,7 @@ const LoginScreen = () => {
 
   const handlePasswordReset = async () => {
     setErrors({});
+    setAuthError('');
     setRecoveryMessage('');
     setRecoveryError('');
 
@@ -91,6 +104,7 @@ const LoginScreen = () => {
   const handleSubmit = async () => {
     // Limpiar errores previos
     setErrors({});
+    setAuthError('');
     
     // Validar
     if (!validateForm()) {
@@ -115,11 +129,11 @@ const LoginScreen = () => {
         const errorMessage = isRegistering 
           ? 'No se pudo crear la cuenta. Verifica los datos e intenta nuevamente.'
           : 'Credenciales incorrectas. Verifica tu correo y contraseña.';
-        
-        Alert.alert('Error de Autenticación', errorMessage);
+
+        setAuthError(errorMessage);
       }
     } catch (error) {
-      Alert.alert('Error', 'Ocurrió un error inesperado. Intenta nuevamente.');
+      setAuthError('Ocurrió un error inesperado. Intenta nuevamente.');
     }
   };
 
@@ -127,6 +141,10 @@ const LoginScreen = () => {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
+        <View style={[styles.brandMark, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons name="moon" size={30} color={colors.primary} />
+        </View>
+        <Text style={[styles.appName, { color: colors.textSecondary }]}>SleepTrack</Text>
         <Text style={[styles.title, { color: colors.text }]}>
           {isRecoveringPassword ? 'Recuperar contraseña' : isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}
         </Text>
@@ -139,7 +157,7 @@ const LoginScreen = () => {
         </Text>
       </View>
 
-      <View style={styles.formContainer}>
+      <View style={[styles.formContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         {isRegistering && !isRecoveringPassword && (
           <CustomInput
             label="Nombre"
@@ -158,6 +176,7 @@ const LoginScreen = () => {
           value={email}
           onChangeText={(value) => {
             setEmail(value);
+            setAuthError('');
             setRecoveryMessage('');
             setRecoveryError('');
           }}
@@ -167,15 +186,47 @@ const LoginScreen = () => {
         />
 
         {!isRecoveringPassword && (
-          <CustomInput
-            label="Contraseña"
-            placeholder="********"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            showPasswordToggle
-            error={errors.password}
-          />
+          <>
+            <CustomInput
+              label="Contraseña"
+              placeholder="********"
+              value={password}
+              onChangeText={(value) => {
+                setPassword(value);
+                setAuthError('');
+              }}
+              secureTextEntry
+              showPasswordToggle
+              error={errors.password}
+              maxLength={PASSWORD_POLICY.maxLength}
+            />
+            {isRegistering ? (
+              <View style={[styles.passwordPolicyBox, { backgroundColor: colors.primaryLight }]}>
+                <Text style={[styles.passwordPolicyTitle, { color: colors.text }]}>
+                  La contraseña debe incluir:
+                </Text>
+                <View style={styles.passwordRequirementGrid}>
+                  {passwordRequirements.map((requirement) => (
+                    <View key={requirement.id} style={styles.passwordRequirement}>
+                      <Ionicons
+                        name={requirement.isMet ? 'checkmark-circle' : 'ellipse-outline'}
+                        size={16}
+                        color={requirement.isMet ? colors.success : colors.textSecondary}
+                      />
+                      <Text
+                        style={[
+                          styles.passwordRequirementText,
+                          { color: requirement.isMet ? colors.text : colors.textSecondary },
+                        ]}
+                      >
+                        {requirement.label}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : null}
+          </>
         )}
 
         {recoveryMessage ? (
@@ -190,6 +241,14 @@ const LoginScreen = () => {
           <View style={[styles.statusBox, { backgroundColor: colors.error + '20' }]}>
             <Text style={[styles.statusText, { color: colors.error }]}>
               {recoveryError}
+            </Text>
+          </View>
+        ) : null}
+
+        {authError ? (
+          <View style={[styles.statusBox, { backgroundColor: colors.error + '20' }]}>
+            <Text style={[styles.statusText, { color: colors.error }]}>
+              {authError}
             </Text>
           </View>
         ) : null}
@@ -213,23 +272,6 @@ const LoginScreen = () => {
           />
         )}
 
-        {!isRegistering && !isRecoveringPassword && (
-          <CustomButton
-            title="Olvidé mi contraseña"
-            onPress={() => {
-              setIsRecoveringPassword(true);
-              setErrors({});
-              setPassword('');
-              setRecoveryMessage('');
-              setRecoveryError('');
-            }}
-            variant="outline"
-            size="large"
-            disabled={loading}
-            style={styles.recoveryButton}
-          />
-        )}
-
         <CustomButton
           title={isRecoveringPassword ? "Volver a iniciar sesión" : isRegistering ? "Ya tengo cuenta" : "Crear cuenta"}
           onPress={() => {
@@ -240,6 +282,7 @@ const LoginScreen = () => {
               setIsRegistering(!isRegistering);
             }
             setErrors({});
+            setAuthError('');
             setRecoveryMessage('');
             setRecoveryError('');
             setSendingRecoveryEmail(false);
@@ -252,6 +295,26 @@ const LoginScreen = () => {
           disabled={loading}
           style={styles.signupButton}
         />
+
+        {!isRegistering && !isRecoveringPassword && (
+          <TouchableOpacity
+            onPress={() => {
+              setIsRecoveringPassword(true);
+              setErrors({});
+              setAuthError('');
+              setPassword('');
+              setRecoveryMessage('');
+              setRecoveryError('');
+            }}
+            activeOpacity={0.7}
+            disabled={loading}
+            style={styles.forgotPasswordLink}
+          >
+            <Text style={[styles.forgotPasswordText, { color: colors.textSecondary }]}>
+              Olvidé mi contraseña
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </ScrollView>
     </SafeAreaView>

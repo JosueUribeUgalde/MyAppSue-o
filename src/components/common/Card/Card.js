@@ -20,14 +20,16 @@ const Card = ({ children, style }) => {
   return (
     <View style={[{ 
       backgroundColor: colors.surface,
-      borderRadius: SIZES.borderRadius.medium,
-      padding: SIZES.padding.md,
+      borderRadius: SIZES.borderRadius.lg,
+      padding: SIZES.padding.lg,
       marginBottom: SIZES.padding.md,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      borderWidth: SIZES.borderWidth.thin,
+      borderColor: colors.border,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.08,
+      shadowRadius: 18,
+      elevation: 4,
     }, style]}>
       {children}
     </View>

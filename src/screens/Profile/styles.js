@@ -20,19 +20,36 @@ const createStyles = (colors) => StyleSheet.create({
   
   header: {
     alignItems: 'center',
-    marginTop: SIZES.padding.xl,
-    marginBottom: SIZES.padding.xxl,
+    marginTop: SIZES.padding.md,
+    marginBottom: SIZES.padding.xl,
+  },
+
+  profileTitle: {
+    fontSize: SIZES.font.xLarge,
+    fontWeight: '900',
+    marginBottom: SIZES.padding.lg,
+  },
+
+  avatarWrap: {
+    position: 'relative',
+    marginBottom: SIZES.padding.md,
   },
   
   avatar: {
-    width: 80,
-    height: 80,
+    width: 76,
+    height: 76,
     borderRadius: SIZES.borderRadius.full,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: SIZES.padding.md,
     overflow: 'hidden',
+    borderWidth: SIZES.borderWidth.medium,
+    borderColor: colors.primary,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    elevation: 5,
   },
 
   avatarImage: {
@@ -40,28 +57,84 @@ const createStyles = (colors) => StyleSheet.create({
     height: '100%',
     borderRadius: SIZES.borderRadius.full,
   },
+
+  avatarCameraButton: {
+    position: 'absolute',
+    right: -1,
+    bottom: -1,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderWidth: SIZES.borderWidth.medium,
+    borderColor: colors.background,
+  },
   
   avatarText: {
-    fontSize: SIZES.font.xxxLarge,
+    fontSize: SIZES.font.xxLarge,
     fontWeight: 'bold',
     color: colors.textLight,
   },
   
   name: {
-    fontSize: SIZES.font.xLarge,
-    fontWeight: 'bold',
+    fontSize: SIZES.font.large,
+    fontWeight: '900',
     color: colors.text,
-    marginBottom: SIZES.padding.xs,
+    marginBottom: 2,
   },
   
   email: {
-    fontSize: SIZES.font.regular,
+    fontSize: SIZES.font.small,
     color: colors.textSecondary,
+    fontWeight: '600',
+  },
+
+  profileStatsGrid: {
+    flexDirection: 'row',
+    gap: SIZES.padding.md,
+    marginBottom: SIZES.padding.xl,
+  },
+
+  profileStatCard: {
+    flex: 1,
+    minHeight: 86,
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.borderRadius.xl,
+    borderWidth: SIZES.borderWidth.thin,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SIZES.padding.md,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 18,
+    elevation: 5,
+  },
+
+  profileStatCardWide: {
+    flex: 1,
+    minWidth: '100%',
+  },
+
+  profileStatValue: {
+    fontSize: SIZES.font.large,
+    fontWeight: '900',
+    marginTop: SIZES.padding.xs,
+  },
+
+  profileStatLabel: {
+    fontSize: SIZES.font.xSmall,
+    fontWeight: '700',
+    marginTop: 2,
+    textAlign: 'center',
   },
   
   sectionTitle: {
     fontSize: SIZES.font.large,
-    fontWeight: '600',
+    fontWeight: '800',
     color: colors.text,
     marginTop: SIZES.padding.lg,
     marginBottom: SIZES.padding.md,
@@ -71,7 +144,7 @@ const createStyles = (colors) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: SIZES.padding.sm,
+    paddingVertical: SIZES.padding.md,
   },
   
   statLabel: {
@@ -81,7 +154,7 @@ const createStyles = (colors) => StyleSheet.create({
   
   statValue: {
     fontSize: SIZES.font.regular,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.primary,
   },
   
@@ -103,6 +176,10 @@ const createStyles = (colors) => StyleSheet.create({
     alignItems: 'center',
   },
 
+  optionBlock: {
+    paddingTop: SIZES.padding.sm,
+  },
+
   optionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -121,6 +198,39 @@ const createStyles = (colors) => StyleSheet.create({
     fontSize: SIZES.font.small,
     color: colors.textSecondary,
     marginTop: SIZES.padding.xs / 2,
+  },
+
+  colorPickerRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SIZES.padding.sm,
+    marginTop: SIZES.padding.md,
+  },
+
+  colorOption: {
+    flexGrow: 1,
+    minWidth: 92,
+    maxWidth: 128,
+    borderWidth: SIZES.borderWidth.medium,
+    borderRadius: SIZES.borderRadius.lg,
+    paddingVertical: SIZES.padding.sm,
+    paddingHorizontal: SIZES.padding.sm,
+    alignItems: 'center',
+  },
+
+  colorSwatch: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.padding.xs,
+  },
+
+  colorOptionLabel: {
+    fontSize: SIZES.font.xSmall,
+    fontWeight: '700',
+    textAlign: 'center',
   },
 
   loadingStats: {
