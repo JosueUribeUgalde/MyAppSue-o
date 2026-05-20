@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CustomButton, CustomInput } from '../../components';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
+import { resetPassword } from '../../services/authService';
 import { validateEmail, validateRequired } from '../../utils/validators';
 import styles from './styles';
 
@@ -28,6 +29,10 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
+  const [recoveryMessage, setRecoveryMessage] = useState('');
+  const [recoveryError, setRecoveryError] = useState('');
+  const [sendingRecoveryEmail, setSendingRecoveryEmail] = useState(false);
   
   // Hook personalizado de autenticación
   const { signIn, signUp, loading } = useAuth();
@@ -59,6 +64,27 @@ const LoginScreen = () => {
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handlePasswordReset = async () => {
+    setErrors({});
+    setRecoveryMessage('');
+    setRecoveryError('');
+
+    if (!validateEmail(email)) {
+      setErrors({ email: 'Escribe un correo válido' });
+      return;
+    }
+
+    setSendingRecoveryEmail(true);
+    const result = await resetPassword(email.trim());
+    setSendingRecoveryEmail(false);
+
+    if (result.success) {
+      setRecoveryMessage('Te enviamos un enlace para recuperar tu contraseña. Revisa tu correo.');
+    } else {
+      setRecoveryError('No se pudo enviar el enlace. Verifica el correo e intenta de nuevo.');
+    }
   };
 
   // Manejar inicio de sesión o registro
@@ -101,14 +127,20 @@ const LoginScreen = () => {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>{isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          {isRecoveringPassword ? 'Recuperar contraseña' : isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}
+        </Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          {isRegistering ? 'Registra tu usuario para guardar tus datos' : 'Bienvenido de vuelta'}
+          {isRecoveringPassword
+            ? 'Recibe un enlace para volver a entrar'
+            : isRegistering
+              ? 'Registra tu usuario para guardar tus datos'
+              : 'Bienvenido de vuelta'}
         </Text>
       </View>
 
       <View style={styles.formContainer}>
-        {isRegistering && (
+        {isRegistering && !isRecoveringPassword && (
           <CustomInput
             label="Nombre"
             placeholder="Tu nombre"
@@ -124,40 +156,95 @@ const LoginScreen = () => {
           label="Email"
           placeholder="ejemplo@correo.com"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(value) => {
+            setEmail(value);
+            setRecoveryMessage('');
+            setRecoveryError('');
+          }}
           keyboardType="email-address"
           autoCapitalize="none"
           error={errors.email}
         />
 
-        {/* Input de Contraseña */}
-        <CustomInput
-          label="Contraseña"
-          placeholder="********"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          showPasswordToggle
-          error={errors.password}
-        />
+        {!isRecoveringPassword && (
+          <CustomInput
+            label="Contraseña"
+            placeholder="********"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            showPasswordToggle
+            error={errors.password}
+          />
+        )}
+
+        {recoveryMessage ? (
+          <View style={[styles.statusBox, { backgroundColor: colors.success + '20' }]}>
+            <Text style={[styles.statusText, { color: colors.success }]}>
+              {recoveryMessage}
+            </Text>
+          </View>
+        ) : null}
+
+        {recoveryError ? (
+          <View style={[styles.statusBox, { backgroundColor: colors.error + '20' }]}>
+            <Text style={[styles.statusText, { color: colors.error }]}>
+              {recoveryError}
+            </Text>
+          </View>
+        ) : null}
 
         {/* Botón de Login usando componente reutilizable */}
-        <CustomButton
-          title={loading ? "Procesando..." : isRegistering ? "Crear Cuenta" : "Iniciar Sesión"}
-          onPress={handleSubmit}
-          size="large"
-          disabled={loading}
-          style={styles.loginButton}
-        />
+        {isRecoveringPassword ? (
+          <CustomButton
+            title={sendingRecoveryEmail ? "Enviando..." : "Enviar enlace"}
+            onPress={handlePasswordReset}
+            size="large"
+            disabled={sendingRecoveryEmail}
+            style={styles.loginButton}
+          />
+        ) : (
+          <CustomButton
+            title={loading ? "Procesando..." : isRegistering ? "Crear Cuenta" : "Iniciar Sesión"}
+            onPress={handleSubmit}
+            size="large"
+            disabled={loading}
+            style={styles.loginButton}
+          />
+        )}
+
+        {!isRegistering && !isRecoveringPassword && (
+          <CustomButton
+            title="Olvidé mi contraseña"
+            onPress={() => {
+              setIsRecoveringPassword(true);
+              setErrors({});
+              setPassword('');
+              setRecoveryMessage('');
+              setRecoveryError('');
+            }}
+            variant="outline"
+            size="large"
+            disabled={loading}
+            style={styles.recoveryButton}
+          />
+        )}
 
         <CustomButton
-          title={isRegistering ? "Ya tengo cuenta" : "Crear cuenta"}
+          title={isRecoveringPassword ? "Volver a iniciar sesión" : isRegistering ? "Ya tengo cuenta" : "Crear cuenta"}
           onPress={() => {
-            setIsRegistering(!isRegistering);
+            if (isRecoveringPassword) {
+              setIsRecoveringPassword(false);
+              setIsRegistering(false);
+            } else {
+              setIsRegistering(!isRegistering);
+            }
             setErrors({});
+            setRecoveryMessage('');
+            setRecoveryError('');
+            setSendingRecoveryEmail(false);
             // Limpiar campos al cambiar de modo
             setDisplayName('');
-            setEmail('');
             setPassword('');
           }}
           variant="outline"

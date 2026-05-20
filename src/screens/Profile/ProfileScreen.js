@@ -36,6 +36,8 @@ const ProfileScreen = ({ navigation, authUser }) => {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [savingAvatarId, setSavingAvatarId] = useState(null);
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Cargar datos del perfil guardados en Firestore
   const loadProfile = useCallback(async () => {
@@ -110,28 +112,19 @@ const ProfileScreen = ({ navigation, authUser }) => {
   };
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que deseas cerrar sesión?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Sí, cerrar sesión',
-          style: 'destructive',
-          onPress: async () => {
-            const result = await logout();
-            if (result.success) {
-              console.log('Sesión cerrada exitosamente');
-            } else {
-              Alert.alert('Error', 'No se pudo cerrar sesión');
-            }
-          },
-        },
-      ]
-    );
+    setIsLogoutModalVisible(true);
+  };
+
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
+    const result = await logout();
+    setIsLoggingOut(false);
+
+    if (result.success) {
+      setIsLogoutModalVisible(false);
+    } else {
+      Alert.alert('Error', 'No se pudo cerrar sesión');
+    }
   };
 
   // Obtener iniciales del nombre o email
@@ -398,6 +391,52 @@ const ProfileScreen = ({ navigation, authUser }) => {
     </ScrollView>
     
     <BottomTabBar navigation={navigation} currentScreen="Profile" />
+    <Modal
+      visible={isLogoutModalVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setIsLogoutModalVisible(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={[styles.confirmModal, { backgroundColor: colors.surface }]}>
+          <View style={[styles.confirmIcon, { backgroundColor: colors.primaryLight }]}>
+            <Ionicons name="log-out-outline" size={28} color={colors.primary} />
+          </View>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>
+            Cerrar sesión
+          </Text>
+          <Text style={[styles.confirmMessage, { color: colors.textSecondary }]}>
+            ¿Seguro que quieres salir de tu cuenta?
+          </Text>
+          <View style={styles.confirmActions}>
+            <TouchableOpacity
+              style={[styles.confirmButton, styles.confirmButtonOutline, { borderColor: colors.border }]}
+              onPress={() => setIsLogoutModalVisible(false)}
+              activeOpacity={0.75}
+              disabled={isLoggingOut}
+            >
+              <Text style={[styles.confirmButtonText, { color: colors.textSecondary }]}>
+                Cancelar
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.confirmButton, { backgroundColor: colors.primary }]}
+              onPress={confirmLogout}
+              activeOpacity={0.75}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? (
+                <ActivityIndicator size="small" color={colors.textLight} />
+              ) : (
+                <Text style={[styles.confirmButtonText, { color: colors.textLight }]}>
+                  Salir
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
     <Modal
       visible={isAvatarModalVisible}
       transparent

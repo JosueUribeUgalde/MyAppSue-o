@@ -227,6 +227,55 @@ const createStyles = (colors) => StyleSheet.create({
     padding: SIZES.padding.lg,
   },
 
+  confirmModal: {
+    width: '100%',
+    maxWidth: 360,
+    borderRadius: SIZES.borderRadius.lg,
+    padding: SIZES.padding.xl,
+    alignItems: 'center',
+  },
+
+  confirmIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.padding.md,
+  },
+
+  confirmMessage: {
+    marginTop: SIZES.padding.sm,
+    fontSize: SIZES.font.regular,
+    textAlign: 'center',
+  },
+
+  confirmActions: {
+    flexDirection: 'row',
+    gap: SIZES.padding.sm,
+    marginTop: SIZES.padding.xl,
+    width: '100%',
+  },
+
+  confirmButton: {
+    flex: 1,
+    minHeight: 48,
+    borderRadius: SIZES.borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SIZES.padding.md,
+  },
+
+  confirmButtonOutline: {
+    backgroundColor: 'transparent',
+    borderWidth: SIZES.borderWidth.medium,
+  },
+
+  confirmButtonText: {
+    fontSize: SIZES.font.regular,
+    fontWeight: '700',
+  },
+
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

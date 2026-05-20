@@ -49,6 +49,22 @@ const styles = StyleSheet.create({
     marginTop: SIZES.padding.md,
     marginBottom: SIZES.padding.xl,
   },
+
+  recoveryButton: {
+    marginTop: SIZES.padding.md,
+  },
+
+  statusBox: {
+    borderRadius: SIZES.borderRadius.md,
+    padding: SIZES.padding.md,
+    marginTop: SIZES.padding.sm,
+  },
+
+  statusText: {
+    fontSize: SIZES.font.small,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
 });
 
 export default styles;
