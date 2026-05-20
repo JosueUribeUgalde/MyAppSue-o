@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, Alert, Switch, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Alert, Switch, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomButton, Card, BottomTabBar } from '../../components';
@@ -19,6 +19,7 @@ import { SIZES } from '../../constants';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getSleepRecords, calculateWeeklyStats } from '../../services/sleepService';
+import { getUserProfile } from '../../services/userService';
 import createStyles from './styles';
 
 const ProfileScreen = ({ navigation, authUser }) => {
@@ -30,6 +31,23 @@ const ProfileScreen = ({ navigation, authUser }) => {
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [profileData, setProfileData] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  // Cargar datos del perfil guardados en Firestore
+  const loadProfile = useCallback(async () => {
+    if (!currentUser) {
+      setLoadingProfile(false);
+      return;
+    }
+
+    setLoadingProfile(true);
+    const result = await getUserProfile(currentUser.uid);
+    const data = result.success ? result.data : {};
+
+    setProfileData(data);
+    setLoadingProfile(false);
+  }, [currentUser]);
 
   // Cargar estadísticas del usuario
   const loadStats = useCallback(async () => {
@@ -80,8 +98,13 @@ const ProfileScreen = ({ navigation, authUser }) => {
   }, [currentUser]);
 
   useEffect(() => {
+    loadProfile();
     loadStats();
-  }, [loadStats]);
+  }, [loadProfile, loadStats]);
+
+  const handleEditProfile = () => {
+    navigation.navigate('EditProfile');
+  };
 
   const handleLogout = async () => {
     Alert.alert(
@@ -110,10 +133,16 @@ const ProfileScreen = ({ navigation, authUser }) => {
 
   // Obtener iniciales del nombre o email
   const getInitials = () => {
-    if (currentUser?.displayName) {
-      return currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+    const displayName = profileData?.displayName || currentUser?.displayName;
+    if (displayName) {
+      return displayName.split(' ').map(n => n[0]).join('').toUpperCase();
     }
     return currentUser?.email?.[0]?.toUpperCase() || 'U';
+  };
+
+  const getPhotoStatus = () => {
+    const photoURL = profileData?.photoURL || currentUser?.photoURL;
+    return photoURL ? 'Configurada' : 'Sin foto';
   };
 
   return (
@@ -124,10 +153,10 @@ const ProfileScreen = ({ navigation, authUser }) => {
           <Text style={styles.avatarText}>{getInitials()}</Text>
         </View>
         <Text style={[styles.name, { color: colors.text }]}>
-          {currentUser?.displayName || 'Usuario'}
+          {profileData?.displayName || currentUser?.displayName || 'Usuario'}
         </Text>
         <Text style={[styles.email, { color: colors.textSecondary }]}>
-          {currentUser?.email || 'Sin correo'}
+          {profileData?.email || currentUser?.email || 'Sin correo'}
         </Text>
       </View>
 
@@ -183,6 +212,80 @@ const ProfileScreen = ({ navigation, authUser }) => {
               Sin datos aún.{'\n'}Registra tu primer sueño.
             </Text>
           </View>
+        )}
+      </Card>
+
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Editar perfil</Text>
+
+      <Card>
+        {loadingProfile ? (
+          <View style={styles.loadingStats}>
+            <ActivityIndicator size="small" color={colors.primary} />
+          </View>
+        ) : (
+          <>
+            <View style={styles.statRow}>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                Nombre
+              </Text>
+              <Text
+                style={[styles.statValue, styles.profileValue, { color: colors.primary }]}
+                numberOfLines={1}
+              >
+                {profileData?.displayName || currentUser?.displayName || 'Usuario'}
+              </Text>
+            </View>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <View style={styles.statRow}>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                Correo
+              </Text>
+              <Text
+                style={[styles.statValue, styles.profileValue, { color: colors.primary }]}
+                numberOfLines={1}
+              >
+                {profileData?.email || currentUser?.email || 'Sin correo'}
+              </Text>
+            </View>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <View style={styles.statRow}>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                Meta de sueño
+              </Text>
+              <Text style={[styles.statValue, { color: colors.primary }]}>
+                {profileData?.sleepGoal || 8}h
+              </Text>
+            </View>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <View style={styles.statRow}>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                Foto de perfil
+              </Text>
+              <Text style={[styles.statValue, { color: colors.primary }]}>
+                {getPhotoStatus()}
+              </Text>
+            </View>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <TouchableOpacity
+              style={styles.editProfileRow}
+              onPress={handleEditProfile}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                Editar datos
+              </Text>
+              <View style={styles.editProfileAction}>
+                <Text style={[styles.statValue, { color: colors.primary }]}>
+                  Editar
+                </Text>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.primary}
+                />
+              </View>
+            </TouchableOpacity>
+          </>
         )}
       </Card>
 

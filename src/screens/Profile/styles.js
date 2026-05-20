@@ -132,6 +132,63 @@ const createStyles = (colors) => StyleSheet.create({
     marginTop: SIZES.padding.sm,
     textAlign: 'center',
   },
+
+  profileValue: {
+    flex: 1,
+    marginLeft: SIZES.padding.md,
+    textAlign: 'right',
+  },
+
+  editProfileRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: SIZES.padding.sm,
+  },
+
+  editProfileAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.padding.xs,
+  },
+
+  editProfileForm: {
+    marginTop: SIZES.padding.sm,
+    paddingTop: SIZES.padding.md,
+    borderTopWidth: SIZES.borderWidth.thin,
+    borderTopColor: colors.border,
+  },
+
+  editActions: {
+    flexDirection: 'row',
+    gap: SIZES.padding.sm,
+    marginTop: SIZES.padding.sm,
+  },
+
+  editActionButton: {
+    flex: 1,
+  },
+
+  editScreenHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SIZES.padding.xl,
+    marginBottom: SIZES.padding.xl,
+  },
+
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: SIZES.borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    marginRight: SIZES.padding.md,
+  },
+
+  editScreenTitleGroup: {
+    flex: 1,
+  },
   
   logoutContainer: {
     marginTop: SIZES.padding.xxl,

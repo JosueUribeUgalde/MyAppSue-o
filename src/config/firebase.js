@@ -11,9 +11,10 @@
  */
 
 import { initializeApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { initializeAuth, getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configuración de Firebase - Credenciales del proyecto SleepTrack
@@ -31,10 +32,23 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializar Auth con persistencia en AsyncStorage
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
+// Web usa la persistencia nativa del navegador; Android/iOS usan AsyncStorage.
+const createAuth = () => {
+  if (Platform.OS === 'web') {
+    return getAuth(app);
+  }
+
+  try {
+    const { getReactNativePersistence } = require('firebase/auth');
+    return initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  } catch (error) {
+    return getAuth(app);
+  }
+};
+
+export const auth = createAuth();
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
