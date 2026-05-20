@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ProyectoFinal",
+    "name":  "ProyectoFinal",
     "slug": "ProyectoFinal",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,7 +20,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
