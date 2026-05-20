@@ -15,6 +15,7 @@ import LoginScreen from '../screens/EJEMPLO_Login/LoginScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import SleepTrackingScreen from '../screens/SleepTracking/SleepTrackingScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 import StatisticsScreen from '../screens/Statistics/StatisticsScreen';
 import HistoryScreen from '../screens/History/HistoryScreen';
 import TipsScreen from '../screens/Tips/TipsScreen';
@@ -72,6 +73,13 @@ const AppNavigator = () => {
       case 'Profile':
         return (
           <ProfileScreen
+            navigation={{ navigate }}
+            authUser={user}
+          />
+        );
+      case 'EditProfile':
+        return (
+          <EditProfileScreen
             navigation={{ navigate }}
             authUser={user}
           />

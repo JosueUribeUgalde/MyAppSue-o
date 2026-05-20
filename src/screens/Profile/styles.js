@@ -32,6 +32,13 @@ const createStyles = (colors) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SIZES.padding.md,
+    overflow: 'hidden',
+  },
+
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: SIZES.borderRadius.full,
   },
   
   avatarText: {
@@ -131,6 +138,167 @@ const createStyles = (colors) => StyleSheet.create({
     color: colors.textSecondary,
     marginTop: SIZES.padding.sm,
     textAlign: 'center',
+  },
+
+  profileValue: {
+    flex: 1,
+    marginLeft: SIZES.padding.md,
+    textAlign: 'right',
+  },
+
+  editProfileRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: SIZES.padding.sm,
+  },
+
+  editProfileAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.padding.xs,
+  },
+
+  avatarPickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: SIZES.padding.sm,
+  },
+
+  avatarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: SIZES.padding.lg,
+    paddingTop: SIZES.padding.xs,
+    paddingBottom: SIZES.padding.sm,
+  },
+
+  avatarOption: {
+    width: '47%',
+    borderWidth: SIZES.borderWidth.medium,
+    borderRadius: SIZES.borderRadius.lg,
+    padding: SIZES.padding.md,
+    alignItems: 'center',
+  },
+
+  avatarOptionImageFrame: {
+    width: 112,
+    height: 112,
+    borderRadius: 56,
+    borderWidth: SIZES.borderWidth.thin,
+    overflow: 'hidden',
+    backgroundColor: colors.background,
+  },
+
+  avatarOptionImage: {
+    width: '100%',
+    height: '100%',
+  },
+
+  avatarOptionFooter: {
+    minHeight: 28,
+    marginTop: SIZES.padding.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SIZES.padding.xs,
+  },
+
+  avatarOptionLabel: {
+    fontSize: SIZES.font.small,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+
+  modalOverlay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SIZES.padding.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  },
+
+  avatarModal: {
+    width: '100%',
+    maxWidth: 430,
+    borderRadius: SIZES.borderRadius.lg,
+    padding: SIZES.padding.lg,
+  },
+
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: SIZES.padding.md,
+  },
+
+  modalTitle: {
+    fontSize: SIZES.font.large,
+    fontWeight: '700',
+  },
+
+  modalSubtitle: {
+    fontSize: SIZES.font.small,
+    marginTop: SIZES.padding.xs / 2,
+  },
+
+  modalCloseButton: {
+    width: 40,
+    height: 40,
+    borderRadius: SIZES.borderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  modalSavingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.padding.sm,
+    marginBottom: SIZES.padding.sm,
+  },
+
+  modalSavingText: {
+    fontSize: SIZES.font.small,
+  },
+
+  editProfileForm: {
+    marginTop: SIZES.padding.sm,
+    paddingTop: SIZES.padding.md,
+    borderTopWidth: SIZES.borderWidth.thin,
+    borderTopColor: colors.border,
+  },
+
+  editActions: {
+    flexDirection: 'row',
+    gap: SIZES.padding.sm,
+    marginTop: SIZES.padding.sm,
+  },
+
+  editActionButton: {
+    flex: 1,
+  },
+
+  editScreenHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SIZES.padding.xl,
+    marginBottom: SIZES.padding.xl,
+  },
+
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: SIZES.borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    marginRight: SIZES.padding.md,
+  },
+
+  editScreenTitleGroup: {
+    flex: 1,
   },
   
   logoutContainer: {
