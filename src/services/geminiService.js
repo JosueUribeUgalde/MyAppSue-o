@@ -20,7 +20,8 @@ export const generarTipConIA = async (horasDormidas, metaSueno, calidadTexto, fe
     generarTipConIA.totalLlamadas = (generarTipConIA.totalLlamadas || 0) + 1;
     console.log(`📊 [DEBUG] Intento #${generarTipConIA.totalLlamadas} a generarTipConIA`);
 
-    // ── 1. CACHÉ INTELIGENTE ──
+    // ── 1. CACHE INTELIGENTE ──
+
     const fechaIdentificador = fechaRegistro || new Date().toISOString().split('T')[0];
     const CACHE_KEY = `tip_ia_${fechaIdentificador}`;
 
