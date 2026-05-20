@@ -1,7 +1,7 @@
 ﻿import { obtenerRecomendacionLocal } from './sleepRecommendations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-console.log("✈️ [DEBUG] ¡Cargando claudeService con caché dinámico por registro!");
+console.log("✈️ [DEBUG] ¡Cargando claudeService con caché dinámico y limpieza UTF-8!");
 
 const CLAUDE_API_KEY = process.env.EXPO_PUBLIC_CLAUDE_API_KEY;
 const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
@@ -20,14 +20,15 @@ export const generarTipConIA = async (horasDormidas, metaSueno, calidadTexto, fe
     generarTipConIA.totalLlamadas = (generarTipConIA.totalLlamadas || 0) + 1;
     console.log(`📊 [DEBUG] Intento #${generarTipConIA.totalLlamadas} a generarTipConIA`);
 
-    // ── 1. CACHÉ INTELIGENTE: Si no hay fecha explícita, usa la de hoy por seguridad ──
+    // ── 1. CACHE INTELIGENTE ──
+
     const fechaIdentificador = fechaRegistro || new Date().toISOString().split('T')[0];
     const CACHE_KEY = `tip_ia_${fechaIdentificador}`;
 
     try {
         const tipGuardado = await AsyncStorage.getItem(CACHE_KEY);
         if (tipGuardado) {
-            console.log(`✅ [CACHÉ] Encontrado tip específico para la fecha [${fechaIdentificador}] en intento #${generarTipConIA.totalLlamadas}.`);
+            console.log(`✅ [CACHÉ] Encontrado tip para la fecha [${fechaIdentificador}].`);
             return tipGuardado;
         }
     } catch (e) {
@@ -36,16 +37,16 @@ export const generarTipConIA = async (horasDormidas, metaSueno, calidadTexto, fe
 
     // ── 2. GUARD: evita llamadas simultáneas ──
     if (llamandoClaude) {
-        console.warn(`⛔ [DEBUG] Llamada #${generarTipConIA.totalLlamadas} bloqueada, ya hay una en curso.`);
+        console.warn(`⛔ [DEBUG] Llamada #${generarTipConIA.totalLlamadas} bloqueada, en curso.`);
         return obtenerRecomendacionLocal(horasDormidas, calidadTexto);
     }
 
     llamandoClaude = true;
 
     try {
-        console.log(`📡 [DEBUG] Intento #${generarTipConIA.totalLlamadas} — Conectando a Claude para la fecha [${fechaIdentificador}]...`);
+        console.log(`📡 [DEBUG] Conectando a Claude para la fecha [${fechaIdentificador}]...`);
 
-        const prompt = `Eres un expert@ en medicina del sueño. Un usuario registró su noche con estos datos:
+        const prompt = `Eres un expert@ en medicina del sueño. Un usuario registró su noche con:
         - Horas totales dormidas: ${horasDormidas} horas.
         - Su meta diaria de sueño es: ${metaSueno} horas.
         - Calidad del sueño: ${calidadTexto}.
@@ -63,9 +64,7 @@ export const generarTipConIA = async (horasDormidas, metaSueno, calidadTexto, fe
             body: JSON.stringify({
                 model: 'claude-haiku-4-5-20251001',
                 max_tokens: 200,
-                messages: [
-                    { role: 'user', content: prompt }
-                ]
+                messages: [{ role: 'user', content: prompt }]
             })
         });
 
@@ -77,13 +76,16 @@ export const generarTipConIA = async (horasDormidas, metaSueno, calidadTexto, fe
         const data = await response.json();
 
         if (data?.content?.[0]?.text) {
-            const tip = data.content[0].text.trim();
-            console.log(`🔥 [DEBUG] Conexión exitosa con Claude para [${fechaIdentificador}].`);
+            // --- CORRECCIÓN DE CARACTERES ESPECIALES ---
+            // .normalize("NFC") asegura que los acentos y símbolos se guarden en formato correcto
+            const rawTip = data.content[0].text.trim();
+            const tip = rawTip.normalize("NFC");
 
-            // ── 3. GUARDAR EN CACHÉ USANDO LA LLAVE ÚNICA DE LA FECHA ──
+            console.log(`🔥 [DEBUG] Conexión exitosa. Tip limpio: ${tip.substring(0, 20)}...`);
+
+            // ── 3. GUARDAR EN CACHÉ ──
             try {
                 await AsyncStorage.setItem(CACHE_KEY, tip);
-                console.log(`💾 [CACHÉ] Tip guardado de forma única con clave: ${CACHE_KEY}`);
             } catch (e) {
                 console.warn("⚠️ No se pudo guardar en caché:", e.message);
             }
@@ -94,9 +96,9 @@ export const generarTipConIA = async (horasDormidas, metaSueno, calidadTexto, fe
         }
 
     } catch (error) {
-        console.warn(`⚠️ [DEBUG] Claude falló en intento #${generarTipConIA.totalLlamadas}. Detalle:`, error.message);
+        console.warn(`⚠️ [DEBUG] Claude falló. Detalle:`, error.message);
         return obtenerRecomendacionLocal(horasDormidas, calidadTexto);
     } finally {
-        llamandoClaude = false ;
+        llamandoClaude = false;
     }
 };
